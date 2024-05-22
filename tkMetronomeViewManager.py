@@ -2,30 +2,14 @@
 import tkinter as tk
 from tkinter import ttk
 import winsound
-from time import sleep
 
 # Local imports
-
-class Observer:
-    """
-    Base class for all objects that will be an Object in an Observer design pattern.
-    """
-    def __init__(self):
-        pass
-
-    def update(self, subject):
-        """
-        Interface method called by Subject to notify observer of a change in state. Must be implemented by children. Will raise NotImplementedError
-        if called.
-        :parameter subject: Which Subject instance is notifying the Obsderver instance?
-        """
-        raise NotImplementedError
-        return None
+from ObserverPatternBase import Observer, Subject
 
 
 class tkMetronomeViewManager(ttk.Frame, Observer):
     """
-    Class follows mediator design pattern. It handles the interactions between widgets in a tkinter based application. Also acts as an Observer.
+    Class follows mediator design pattern. Acts as Observer, and handles the interactions between metronome app's widgets.
     """
     def __init__(self, parent) -> None:
         """
@@ -34,14 +18,14 @@ class tkMetronomeViewManager(ttk.Frame, Observer):
         ttk.Frame.__init__(self, parent)
         Observer.__init__(self)
 
-        self._beat_after_id = 0
-        self._bpm = 120
+        self._beat_after_id = 0 # The id of each successive tkinter "after" event that controls the timing of the next beat.
+        self._bpm = 120 # Beats per minute setting for the metronome.
 
-        self.CreateWidgets()
+        self._CreateWidgets()
 
     def detach_from_subjects(self):
         """
-        Detach from all widgets.
+        Detach from all widgets. Should be called when the app exits.
         :return None:
         """
         self._bpm_widget.detach(self)
@@ -49,15 +33,7 @@ class tkMetronomeViewManager(ttk.Frame, Observer):
         self._start_stop_widget.detach(self)
         return None
 
-    def reset_widgets(self):
-        """
-        Utility function called to put child widgets in appropriate state after ... or before ....
-        """
-        # self._crib_widget.reset_widgets_for_new_deal()
-        
-        return None
-
-    def CreateWidgets(self):
+    def _CreateWidgets(self):
         """
         Utility function to be called by __init__ to set up the child widgets of the tkMetronomeViewManager widget.
         :return None:
@@ -85,7 +61,7 @@ class tkMetronomeViewManager(ttk.Frame, Observer):
 
     def update(self, subject):
         """
-        Implementation of Subject.update(). Acts as a switchboard based on which widget is notifying.
+        Implementation of Observer.update(). Acts as a switchboard based on which widget is notifying.
         :parameter subject: Which widget instance is notifying the mediator?
         :return None:
         """
@@ -95,6 +71,8 @@ class tkMetronomeViewManager(ttk.Frame, Observer):
                 self.handle_start_stop_widget_update()
             case self._bpm_widget:
                 self.handle_bmp_widget_update()
+            case self._beacon_widget:
+                pass
         return None
 
     def handle_start_stop_widget_update(self):
@@ -105,22 +83,14 @@ class tkMetronomeViewManager(ttk.Frame, Observer):
         if self._start_stop_widget.get_state():
             # Metronome should be started.
 
-            # Calculate the delay between clicks from the bpm value
-
-            # Convert to beats per second
-            bps = self._bpm / 60.
-            # Compute delay between clicks in milliseconds
-            click_delay = 1000. / bps
-
             # Start the event loop calling beat(...)
             self.beat()
-
         else:
             # Metronome should be stopped.
 
             # Cancel the beat after callback
             self.master.after_cancel(self._beat_after_id)
-            # Reset the after id
+            # Reset the beat after id
             self._beat_after_id = 0
             # Turn off beacon light
             self._beacon_widget.set_state(False)
@@ -138,7 +108,7 @@ class tkMetronomeViewManager(ttk.Frame, Observer):
     def beat(self):
         """
         This is the function that is called to actually "tick" the metronome. Note that the timing of the beat is managed by the
-        tkinter event loop, so is not seen within this method, but rather is controlling how often this method gets called.
+        tkinter event loop.
         :return None:
         """
         # Determine beat delay, the time between beats (clicks) of the metronome
@@ -153,7 +123,7 @@ class tkMetronomeViewManager(ttk.Frame, Observer):
             
         # Beep
         frequency = 2500  # Set Frequency To 2500 Hertz
-        duration = 50  # Set Duration To 100 ms == 0.1 second (must be < 125, since maximum bpm is 480)
+        duration = 50  # Set Duration To 50 ms == 0.05 second (must be < 250, since maximum bpm is 240)
         winsound.Beep(frequency, duration)
 
         # Turn on beacon, to "flash" it as part of the beat
@@ -161,55 +131,13 @@ class tkMetronomeViewManager(ttk.Frame, Observer):
 
         self._beat_after_id = self.master.after(int(beat_delay), self.beat)
 
-        # sleep for the appropriate delay time
-        # sleep(beat_delay)
-
-        return None
-
-
-class Subject:
-    """
-    Base class for all objects that will a Subject in an Observer design pattern.
-    """
-    def __init__(self) -> None:
-        """
-        """
-        self._observers = []
-
-    def attach(self, observer=None):
-        """
-        Attach an observer to the subject.
-        :parameter observer: Observer object, instance of Observer class 
-        :return None:
-        """
-        if observer:
-            assert(isinstance(observer, Observer))
-            self._observers.append(observer)
-        return None
-
-    def detach(self, observer=None):
-        """
-        Detach an observer from the subject.
-        :parameter observer: Observer object, instance of Observer class 
-        :return None:
-        """
-        if observer:
-            self._observers.remove(observer)
-        return None
-
-    def notify(self):
-        """
-        Call update(...) on all observers.
-        :return None:
-        """
-        for o in self._observers:
-            o.update(self)
         return None
 
 
 class MetronomeBpmWidget(ttk.Labelframe, Subject):
     """
     Class represents a tkinter label frame, the widget contents of which allow the beats per minute of the metronome to be set.
+    Class is also a Subject in Observer design pattern.
     """
     def __init__(self, parent, bpm=0) -> None:
         """
@@ -230,10 +158,11 @@ class MetronomeBpmWidget(ttk.Labelframe, Subject):
     def OnBpmChanged(self, value):
         """
         Event handler for changes to bpm scale.
+        :return None:
         """
-        # Inform the mediator object of the change in beats per minute of the metronome
+        # Inform all observers of the change in beats per minute of the metronome.
         self.notify()
-        pass
+        return None
 
     def get_state(self):
         """
@@ -245,6 +174,7 @@ class MetronomeBpmWidget(ttk.Labelframe, Subject):
 class MetronomeStartStopWidget(ttk.Labelframe, Subject):
     """
     Class represents a tkinter label frame, the widget contents of which will allow the metronome to be started and stopped.
+    Class is also a Subject in Observer design pattern.
     """
     def __init__(self, parent) -> None:
         ttk.Labelframe.__init__(self, parent, text='Start/Stop')
@@ -263,14 +193,14 @@ class MetronomeStartStopWidget(ttk.Labelframe, Subject):
         """
         Return whether the widget's state is started or stopped. Returns this as a bool which is True if started,
         and False if NOT started (that is, stopped).
-        :return isStarted: True of started, False if stopped, bool
+        :return isStarted: True if started, False if stopped, bool
         """
         return self._is_started
-
     
     def OnStartStopButtonClicked(self):
         """
         Event handler for start/stop button click.
+        :return None:
         """
         # Flip the started state
         if self._is_started:
@@ -293,6 +223,7 @@ class MetronomeStartStopWidget(ttk.Labelframe, Subject):
 class MetronomeBeaconWidget(ttk.Labelframe, Subject):
     """
     Class represents a tkinter label frame, the widget contents of which will be a visual indicator of the metronome's timing tick.
+    Class is also a Subject in Observer design pattern.
     """
     def __init__(self, parent) -> None:
         ttk.Labelframe.__init__(self, parent, text='Beacon')

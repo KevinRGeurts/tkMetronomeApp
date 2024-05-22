@@ -26,6 +26,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="MetronomeApp.py" />
+    <Compile Include="ObserverPatternBase.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="tkMetronomeViewManager.py">
       <SubType>Code</SubType>
     </Compile>
