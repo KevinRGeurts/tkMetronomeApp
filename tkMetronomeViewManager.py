@@ -35,8 +35,19 @@ class tkMetronomeViewManager(ttk.Frame, Observer):
         Observer.__init__(self)
 
         self._beat_after_id = 0
+        self._bpm = 120
 
         self.CreateWidgets()
+
+    def detach_from_subjects(self):
+        """
+        Detach from all widgets.
+        :return None:
+        """
+        self._bpm_widget.detach(self)
+        self._beacon_widget.detach(self)
+        self._start_stop_widget.detach(self)
+        return None
 
     def reset_widgets(self):
         """
@@ -46,28 +57,13 @@ class tkMetronomeViewManager(ttk.Frame, Observer):
         
         return None
 
-    def handle_X_event(self, info):
-        """
-        Called to handle  event.
-        """
-        # assert(info.event_type == CribbageGameOutputEvents.START_GAME)
-        # self._board_widget._player1_track['text']=f"{info.name_player1}"
-        # self._board_widget._player2_track['text']=f"{info.name_player1}"
-        
-        # self.reset_widgets_for_new_deal()
-
-        # self._board_widget.set_pegs_player1()
-        # self._board_widget.set_pegs_player2()
-        
-        return None
-
     def CreateWidgets(self):
         """
         Utility function to be called by __init__ to set up the child widgets of the tkMetronomeViewManager widget.
         :return None:
         """
 
-        self._bpm_widget = MetronomeBpmWidget(self)
+        self._bpm_widget = MetronomeBpmWidget(self, self._bpm)
         self._bpm_widget.attach(self)
         self._bpm_widget.grid(column=0, row=0, rowspan=2, sticky='NWES') # Grid-2
         self.columnconfigure(0, weight=1) # Grid-2
@@ -82,8 +78,8 @@ class tkMetronomeViewManager(ttk.Frame, Observer):
         self._start_stop_widget = MetronomeStartStopWidget(self)
         self._start_stop_widget.attach(self)
         self._start_stop_widget.grid(column=2, row=1, sticky='NWES') # Grid-2
-        self.columnconfigure(1, weight=1) # Grid-2
-        self.rowconfigure(0, weight=1) # Grid-2
+        self.columnconfigure(2, weight=1) # Grid-2
+        self.rowconfigure(1, weight=1) # Grid-2
 
         return None
 
@@ -97,6 +93,8 @@ class tkMetronomeViewManager(ttk.Frame, Observer):
         match subject:
             case self._start_stop_widget:
                 self.handle_start_stop_widget_update()
+            case self._bpm_widget:
+                self.handle_bmp_widget_update()
         return None
 
     def handle_start_stop_widget_update(self):
@@ -108,15 +106,14 @@ class tkMetronomeViewManager(ttk.Frame, Observer):
             # Metronome should be started.
 
             # Calculate the delay between clicks from the bpm value
-            # TODO: Call a method on bpm widget to achieve this, rather than doing it directly
-            bpm=self._bpm_widget._value_bpm.get()
+
             # Convert to beats per second
-            bps = bpm / 60.
+            bps = self._bpm / 60.
             # Compute delay between clicks in milliseconds
             click_delay = 1000. / bps
 
             # Start the event loop calling beat(...)
-            self.beat(int(click_delay))
+            self.beat()
 
         else:
             # Metronome should be stopped.
@@ -130,13 +127,27 @@ class tkMetronomeViewManager(ttk.Frame, Observer):
 
         return None
 
-    def beat(self, beat_delay):
+    def handle_bmp_widget_update(self):
+        """
+        Handle updates from bpm widget.
+        :return None:
+        """
+        self._bpm = self._bpm_widget.get_state()
+        return None
+
+    def beat(self):
         """
         This is the function that is called to actually "tick" the metronome. Note that the timing of the beat is managed by the
         tkinter event loop, so is not seen within this method, but rather is controlling how often this method gets called.
-        :parameter beat_delay: The time in milliseconds between beats, int
         :return None:
         """
+        # Determine beat delay, the time between beats (clicks) of the metronome
+
+        # Convert to beats per second
+        bps = self._bpm / 60
+        # Compute delay between clicks in milliseconds
+        beat_delay = 1000. / bps
+        
         # Turn off beacon, in case it was turned on by a previous beat
         self._beacon_widget.set_state(False)
             
@@ -148,10 +159,10 @@ class tkMetronomeViewManager(ttk.Frame, Observer):
         # Turn on beacon, to "flash" it as part of the beat
         self._beacon_widget.set_state(True)
 
-        self._beat_after_id = self.master.after(int(beat_delay), self.beat, int(beat_delay))
+        self._beat_after_id = self.master.after(int(beat_delay), self.beat)
 
         # sleep for the appropriate delay time
-        # sleep(click_delay)
+        # sleep(beat_delay)
 
         return None
 
@@ -200,7 +211,7 @@ class MetronomeBpmWidget(ttk.Labelframe, Subject):
     """
     Class represents a tkinter label frame, the widget contents of which allow the beats per minute of the metronome to be set.
     """
-    def __init__(self, parent) -> None:
+    def __init__(self, parent, bpm=0) -> None:
         """
         :parameter parent: tkinter widget that is the parent of this widget
         """
@@ -213,12 +224,22 @@ class MetronomeBpmWidget(ttk.Labelframe, Subject):
         self.columnconfigure(0, weight=1) # Grid-2
         self.rowconfigure(0, weight=1) # Grid-2
         self._value_bpm=tk.IntVar()
-        self._value_bpm.set(120)
+        self._value_bpm.set(bpm)
         self._scale_bpm['variable']=self._value_bpm
 
     def OnBpmChanged(self, value):
+        """
+        Event handler for changes to bpm scale.
+        """
         # Inform the mediator object of the change in beats per minute of the metronome
+        self.notify()
         pass
+
+    def get_state(self):
+        """
+        Return the bpm value from the widget.
+        """
+        return self._value_bpm.get()
 
 
 class MetronomeStartStopWidget(ttk.Labelframe, Subject):

@@ -24,6 +24,9 @@ class MetronomeApp(ttk.Frame):
         # Create and setup the child widgets of the app
         self.setup_child_widgets()
 
+        # If the user X's the main window, make sure we clean up 
+        parent.protocol("WM_DELETE_WINDOW", self.onExit)
+
     def setup_menubar(self):
         """
         Utility function to be called by __init__ to set up the menu bar of the app.
@@ -41,7 +44,7 @@ class MetronomeApp(ttk.Frame):
         """
         self._view_manager = tkMetronomeViewManager(self)
         self._view_manager.grid(column=0, row=0, sticky='NWES') # Grid-1
-        self.columnconfigure(1, weight=1) # Grid-1
+        self.columnconfigure(0, weight=1) # Grid-1
         self.rowconfigure(0, weight=1) # Grid-1
         
         return None
@@ -50,6 +53,7 @@ class MetronomeApp(ttk.Frame):
         """
         Method called when menu item File | Exit is selected.
         """
+        self._view_manager.detach_from_subjects()
         self.master.destroy()
         return None
         
