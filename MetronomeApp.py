@@ -19,15 +19,15 @@ class MetronomeApp(ttk.Frame):
         parent.option_add('*tearOff', False) # Prevent menus from tearing off
 
         # Create and setup a menubar for the app
-        self.setup_menubar()
+        self._setup_menubar()
         
         # Create and setup the child widgets of the app
-        self.setup_child_widgets()
+        self._setup_child_widgets()
 
         # If the user X's the main window, make sure we clean up 
         parent.protocol("WM_DELETE_WINDOW", self.onExit)
 
-    def setup_menubar(self):
+    def _setup_menubar(self):
         """
         Utility function to be called by __init__ to set up the menu bar of the app.
         """
@@ -38,7 +38,7 @@ class MetronomeApp(ttk.Frame):
         self._menu_file.add_command(label='Exit', command=self.onExit)
         return None
         
-    def setup_child_widgets(self):
+    def _setup_child_widgets(self):
         """
         Utility function to be called by __init__ to set up the child widgets of the app.
         """
@@ -46,7 +46,6 @@ class MetronomeApp(ttk.Frame):
         self._view_manager.grid(column=0, row=0, sticky='NWES') # Grid-1
         self.columnconfigure(0, weight=1) # Grid-1
         self.rowconfigure(0, weight=1) # Grid-1
-        
         return None
         
     def onExit(self):

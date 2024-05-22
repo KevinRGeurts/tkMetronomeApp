@@ -218,8 +218,8 @@ class MetronomeBpmWidget(ttk.Labelframe, Subject):
         ttk.Labelframe.__init__(self, parent, text=f"Beats Per Minute")
         Subject.__init__(self)
 
-        self._scale_bpm = tk.Scale(self, orient=tk.VERTICAL, length='2i', from_=60, to=480, command=self.OnBpmChanged,
-                                   tickinterval=60)
+        self._scale_bpm = tk.Scale(self, orient=tk.VERTICAL, length='2i', from_=30, to=240, command=self.OnBpmChanged,
+                                   tickinterval=30)
         self._scale_bpm.grid(column=0, row=0) # Grid-2
         self.columnconfigure(0, weight=1) # Grid-2
         self.rowconfigure(0, weight=1) # Grid-2
