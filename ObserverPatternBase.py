@@ -13,7 +13,7 @@ class Observer:
         """
         Interface method called by Subject to notify observer of a change in state. Must be implemented by children. Will raise NotImplementedError
         if called.
-        :parameter subject: Which Subject instance is notifying the Obsderver instance?
+        :parameter subject: Which Subject instance is notifying the Observer instance?
         """
         raise NotImplementedError
         return None
