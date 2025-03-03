@@ -4,6 +4,7 @@ from tkinter import ttk
 
 # local imports
 from tkMetronomeViewManager import tkMetronomeViewManager
+from metronome import Metronome
 
 
 class MetronomeApp(ttk.Frame):
@@ -20,6 +21,9 @@ class MetronomeApp(ttk.Frame):
 
         # Create and setup a menubar for the app
         self._setup_menubar()
+        
+        # Create/initialize the metronome business logic object
+        self._metronome = Metronome()        
         
         # Create and setup the child widgets of the app
         self._setup_child_widgets()
@@ -55,5 +59,28 @@ class MetronomeApp(ttk.Frame):
         self._view_manager.detach_from_subjects()
         self.master.destroy()
         return None
+
+    def get_bpm(self):
+        """
+        Returns the number of beats per minute setting of the metronome.
+        :return: The number of beats per minute setting of the metronome, int
+        """
+        return self._metronome.tempo
+
+    def set_bpm(self, bpm):
+        """
+        Set the number of beats per minute setting of the metronome.
+        :parameter bpm: The number of beats per minute, int
+        """
+        assert (bpm>0)
+        self._metronome.tempo=bpm
+    
+    def get_next_beat(self):
+        """
+        Return the delay until the next beat of the metronome (or that length of the current beat),
+        and whether or not the current beat is stressed.
+        :return: (beat delay in seconds, stressed), as tuple
+        """
+        return self._metronome.next_beat()
         
         

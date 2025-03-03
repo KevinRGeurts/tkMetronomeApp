@@ -19,7 +19,7 @@ class tkMetronomeViewManager(ttk.Frame, Observer):
         Observer.__init__(self)
 
         self._beat_after_id = 0 # The id of each successive tkinter "after" event that controls the timing of the next beat.
-        self._bpm = 120 # Beats per minute setting for the metronome.
+        self.master.set_bpm(120) # Beats per minute setting for the metronome.
 
         self._CreateWidgets()
 
@@ -39,7 +39,7 @@ class tkMetronomeViewManager(ttk.Frame, Observer):
         :return None:
         """
 
-        self._bpm_widget = MetronomeBpmWidget(self, self._bpm)
+        self._bpm_widget = MetronomeBpmWidget(self, self.master.get_bpm())
         self._bpm_widget.attach(self)
         self._bpm_widget.grid(column=0, row=0, rowspan=2, sticky='NWES') # Grid-2
         self.columnconfigure(0, weight=1) # Grid-2
@@ -102,7 +102,7 @@ class tkMetronomeViewManager(ttk.Frame, Observer):
         Handle updates from bpm widget.
         :return None:
         """
-        self._bpm = self._bpm_widget.get_state()
+        self.master.set_bpm(self._bpm_widget.get_state())
         return None
 
     def beat(self):
@@ -111,12 +111,9 @@ class tkMetronomeViewManager(ttk.Frame, Observer):
         tkinter event loop.
         :return None:
         """
-        # Determine beat delay, the time between beats (clicks) of the metronome
-
-        # Convert to beats per second
-        bps = self._bpm / 60
-        # Compute delay between clicks in milliseconds
-        beat_delay = 1000. / bps
+        # Determine beat delay, the time until the next beat (click) of the metronome in seconds
+        (beat_delay, stressed) = self.master.get_next_beat()
+        print(f"delay (s): {beat_delay}, stressed beat: {stressed}")
         
         # Turn off beacon, in case it was turned on by a previous beat
         self._beacon_widget.set_state(False)
@@ -129,7 +126,7 @@ class tkMetronomeViewManager(ttk.Frame, Observer):
         # Turn on beacon, to "flash" it as part of the beat
         self._beacon_widget.set_state(True)
 
-        self._beat_after_id = self.master.after(int(beat_delay), self.beat)
+        self._beat_after_id = self.master.after(int(1000.0*beat_delay), self.beat)
 
         return None
 

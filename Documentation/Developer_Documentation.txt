@@ -1,0 +1,25 @@
+Developer Documentation
+
+Requirements (thoughts?) on adding ability to set a rhythm for the metronome.
+1. Define a rhythm using a text string, encoded as follows:
+	a. "W": One full beat of the metronome, stressed
+	b. "w": One full beat of the metronome, unstressed
+	c. "r": Rest full beat of the metronome, stressed or unstressed is n/a
+	d. "H": One half beat of the metronome, stressed
+	e. "h": One half beat of the metronome, unstressed
+	f. "Q": One quarter beat of the metronome, stressed
+	g. "q": One quarter beat of the metronome, unstressed
+2. For now, assume that resting for less than a full beat can be accomplished by using a longer less-then-full beat.
+   For example in 4/4 time, eight note, eight note, eight rest, eight note, eight note, eight rest, eight note ... = 'Hwhw.
+2. Note that as an example, if the metronome were set to beat at 60 bpm, and a half beat was coded, then the next beat
+   would occur at (1/2) / ( 60 bpm X (1 min/60 sec) ) seconds.
+3. After each beat of the metronome, the metronome will read the next character from the string to set the timing for
+   the next beat.
+4. A "pointer" is kept to the current location in the string. When the end of the string is reached, the pointer is
+   returned to the beginning.
+5. Stressed or unstressed. Stressed beats will be louder (?) and visually different.
+
+Some possible additional new features:
+1. Display count along with flash, like 1 ... 2 ... 3 ... 4 ... 1 ... 2 ... 3 ... 4
+	a. Issue ... counts should only be on W/w beats, or shorter that sum to that?
+2. Should the count be like W=1, H=&, Q=e-a ?
