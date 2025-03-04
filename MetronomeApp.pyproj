@@ -33,6 +33,9 @@
     <Compile Include="ObserverPatternBase.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="test_ObserverPatternBase.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="test_metronome.py">
       <SubType>Code</SubType>
     </Compile>
