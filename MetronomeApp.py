@@ -23,7 +23,8 @@ class MetronomeApp(ttk.Frame):
         self._setup_menubar()
         
         # Create/initialize the metronome business logic object
-        self._metronome = Metronome()        
+        self._metronome = Metronome()
+        self._metronome.rhythm = 'WhhWhh'
         
         # Create and setup the child widgets of the app
         self._setup_child_widgets()
@@ -56,7 +57,6 @@ class MetronomeApp(ttk.Frame):
         """
         Method called when menu item File | Exit is selected.
         """
-        self._view_manager.detach_from_subjects()
         self.master.destroy()
         return None
 

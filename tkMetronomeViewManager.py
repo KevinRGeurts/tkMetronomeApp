@@ -5,6 +5,7 @@ import winsound
 
 # Local imports
 from ObserverPatternBase import Observer, Subject
+from metronome import BeatType
 
 
 class tkMetronomeViewManager(ttk.Frame, Observer):
@@ -19,11 +20,23 @@ class tkMetronomeViewManager(ttk.Frame, Observer):
         Observer.__init__(self)
 
         self._beat_after_id = 0 # The id of each successive tkinter "after" event that controls the timing of the next beat.
+        self._beacon_state = BeatType.REST
         self.master.set_bpm(120) # Beats per minute setting for the metronome.
 
         self._CreateWidgets()
 
-    def detach_from_subjects(self):
+        self.bind('<Destroy>', self.onDestroy, '+')
+        
+    def onDestroy(self, event):
+        """
+        Method called after ttk.Frame is destroyed.
+        :return: None
+        """
+        # Detach this observer from it's subjects, the child widgets of the mediator / view manager
+        self._detach_from_subjects()
+        return None
+        
+    def _detach_from_subjects(self):
         """
         Detach from all widgets. Should be called when the app exits.
         :return None:
@@ -93,7 +106,7 @@ class tkMetronomeViewManager(ttk.Frame, Observer):
             # Reset the beat after id
             self._beat_after_id = 0
             # Turn off beacon light
-            self._beacon_widget.set_state(False)
+            self._beacon_widget.set_state(BeatType.REST)
 
         return None
 
@@ -116,15 +129,15 @@ class tkMetronomeViewManager(ttk.Frame, Observer):
         print(f"delay (s): {beat_delay}, stressed beat: {stressed}")
         
         # Turn off beacon, in case it was turned on by a previous beat
-        self._beacon_widget.set_state(False)
+        self._beacon_widget.set_state(BeatType.REST)
             
         # Beep
         frequency = 2500  # Set Frequency To 2500 Hertz
         duration = 50  # Set Duration To 50 ms == 0.05 second (must be < 250, since maximum bpm is 240)
         winsound.Beep(frequency, duration)
 
-        # Turn on beacon, to "flash" it as part of the beat
-        self._beacon_widget.set_state(True)
+        # Turn on beacon, to "flash" it as part of the beat, for either a normal or stressed beat
+        self._beacon_widget.set_state(stressed)
 
         self._beat_after_id = self.master.after(int(1000.0*beat_delay), self.beat)
 
@@ -238,16 +251,19 @@ class MetronomeBeaconWidget(ttk.Labelframe, Subject):
         self._btn_beacon['background']='black'
         self._btn_beacon['state']=tk.DISABLED
 
-    def set_state(self, light=False):
+    def set_state(self, state = BeatType.REST):
         """
-        Sets whether the beacon is lit or not.
-        :parameter light: If True, then beacon state should be set to lit, boolean
+        Maps argument state onte background color and sets it.
+        :parameter state: What state should the beacon be set at, BeatType Enum
         :return None:
         """
-        if light:
-            self._btn_beacon['background']='green'
-        else:
-            self._btn_beacon['background']='black'
+        match state:
+            case BeatType.REST:
+                self._btn_beacon['background']='black'
+            case BeatType.NORMAL:
+                self._btn_beacon['background']='green'
+            case BeatType.STRESSED:
+                self._btn_beacon['background']='red'
         self.master.update_idletasks()
 
         return None

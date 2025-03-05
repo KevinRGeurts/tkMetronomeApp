@@ -4,8 +4,19 @@ This module provides the metronome class, which represents the "business logic" 
 
 # standard imports
 from dataclasses import dataclass
+from enum import Enum
 
 # local imports
+
+
+class BeatType(Enum):
+    """
+    An enumeration that represents the type of the metronome beat.
+    """
+    REST = 1
+    NORMAL = 2
+    STRESSED = 3
+
 
 @dataclass
 class Metronome:
@@ -28,35 +39,35 @@ class Metronome:
     def next_beat(self):
         """
         Returns information about the next metronome beat, and advances _current beat.
-        :return: (beat delay in seconds, stressed? (true/false)), as (float, boolean)
+        :return: (beat delay in seconds, stressed? (NORMAL/STRESSED)), as (float, BeatType Enum)
         Note: The beat delay is really the delay until the next beat, or the duration of the current beat.
               stressed is whether or not the current beat is a stressed beat.
         """
         beat_delay = 0
         beat_factor = 1
-        stressed = False
+        stressed = BeatType.NORMAL
         beat_code = self.rhythm[self._current_beat]
         match beat_code:
             case 'W':
-                stressed = True
+                stressed = BeatType.STRESSED
                 beat_factor = 1 
             case 'w':
-                stressed = False
+                stressed = BeatType.NORMAL
                 beat_factor = 1.0
             case 'r':
-                stressed = False
+                stressed = BeatType.REST
                 beat_factor = 2.0 
             case 'H':
-                stressed = True
+                stressed = BeatType.STRESSED
                 beat_factor = 0.5 
             case 'h':
-                stressed = False
+                stressed = BeatType.NORMAL
                 beat_factor = 0.5
             case 'Q':
-                stressed = True
+                stressed = BeatType.STRESSED
                 beat_factor = 0.25 
             case 'q':
-                stressed = False
+                stressed = BeatType.NORMAL
                 beat_factor = 0.25
         beat_delay = beat_factor / (self.tempo / 60.)
 
