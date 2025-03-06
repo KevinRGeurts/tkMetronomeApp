@@ -4,6 +4,7 @@ import tkinter as tk
 
 # Local
 from MetronomeApp import MetronomeApp
+from metronome import BeatType
 
 
 class Test_test_MetronomeApp(unittest.TestCase):
@@ -18,7 +19,7 @@ class Test_test_MetronomeApp(unittest.TestCase):
     def test_get_next_beat(self):
         root = tk.Tk()
         myapp = MetronomeApp(root)
-        exp_val = (0.5, True)
+        exp_val = (0.5, BeatType.STRESSED
         myapp.set_bpm(120)
         act_val = myapp.get_next_beat()
         self.assertTupleEqual(exp_val, act_val)

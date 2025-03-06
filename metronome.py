@@ -3,10 +3,11 @@ This module provides the metronome class, which represents the "business logic" 
 """
 
 # standard imports
-from dataclasses import dataclass
 from enum import Enum
+import re as re
 
 # local imports
+from exceptions import InvalidRhythmSpecificationError
 
 
 class BeatType(Enum):
@@ -18,23 +19,34 @@ class BeatType(Enum):
     STRESSED = 3
 
 
-@dataclass
 class Metronome:
     """
     This class represents the "business logic" of a metronome.
-        tempo: The tempo of the metronome, in bpm (beats per minute), int
-        rhythm: A string representing the rhythm of the metronome beats, string
+        _tempo: The tempo of the metronome, in bpm (beats per minute), int
+        _rhythm: A string representing the rhythm of the metronome beats, string
         _current_beat: Current location in the rhythm string, int
     """
-    tempo: int = 60
-    rhythm: str = 'Wwww' 
-
-    """
-    This member function is called automatically by the auto-generated __init__(). Here we use it
-    to create/initialize a hidden member variable.
-    """
-    def __post_init__(self):
+    def __init__(self, tempo = 60, rhythm = 'Wwww'):
+        self.tempo = tempo
+        self.rhythm = rhythm 
         self._current_beat = 0
+
+    @property
+    def tempo(self):
+        return self._tempo
+
+    @tempo.setter
+    def tempo(self, value):
+        self._tempo = value
+
+    @property
+    def rhythm(self):
+        return self._rhythm
+
+    @rhythm.setter
+    def rhythm(self, value):
+        self._validate_rhythm(value)
+        self._rhythm = value
 
     def next_beat(self):
         """
@@ -80,6 +92,18 @@ class Metronome:
 
         return (beat_delay, stressed)
 
+    def _validate_rhythm(self, rhythm_str):
+        """
+        Validate that rhythm_str is a valid specification for self.rhythm.
+        :parameter rhythm_str: String to test as being a valid rhythm specification, string
+        :return: None
+        Raises InvalideRhythmSpecificationError if rhythm_str is an invalid rhythm specification.
+        """
+        match_result = re.match('[WwHhQqr]+', rhythm_str)
+        # For rhythm_str to be valid, the match must be the same length as rhythm_str
+        if  not match_result or len(rhythm_str) != len(match_result[0]):
+            raise InvalidRhythmSpecificationError(error_msg = 'Metronome rhythm specification is not valid.')
+        return None
 
 
 

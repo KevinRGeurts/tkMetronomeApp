@@ -3,6 +3,7 @@ import unittest
 
 # Local imports
 from metronome import BeatType, Metronome
+from exceptions import InvalidRhythmSpecificationError
 
 
 class Test_metronome(unittest.TestCase):
@@ -72,6 +73,17 @@ class Test_metronome(unittest.TestCase):
         act_val = (delay, stressed)
         self.assertTupleEqual(exp_val, act_val)
 
+    def test_validate_rhythm_good(self):
+        met = Metronome()
+        exp_val = None
+        act_val = met._validate_rhythm('Ww')
+        self.assertEqual(exp_val, act_val)
+        
+    def test_validate_rhythm_empty(self):
+        self.assertRaises(InvalidRhythmSpecificationError, Metronome, rhythm='')
+
+    def test_validate_rhythm_bad(self):
+        self.assertRaises(InvalidRhythmSpecificationError, Metronome, rhythm='Wx')
 
 if __name__ == '__main__':
     unittest.main()
