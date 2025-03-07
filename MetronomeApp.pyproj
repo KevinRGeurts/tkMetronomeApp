@@ -45,7 +45,13 @@
     <Compile Include="test_metronome.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="test_tkViewManager.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="tkMetronomeViewManager.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tkViewManager.py">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>

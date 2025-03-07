@@ -7,7 +7,7 @@ from MetronomeApp import MetronomeApp
 from metronome import BeatType
 
 
-class Test_test_MetronomeApp(unittest.TestCase):
+class Test_MetronomeApp(unittest.TestCase):
     def test_set_bpm_get_bpm(self):
         root = tk.Tk()
         myapp = MetronomeApp(root)
