@@ -4,88 +4,51 @@ from tkinter import ttk
 import winsound
 
 # Local imports
+from tkViewManager import tkViewManager
 from ObserverPatternBase import Observer, Subject
 from metronome import BeatType
 
 
-class tkMetronomeViewManager(ttk.Frame, Observer):
+class tkMetronomeViewManager(tkViewManager):
     """
-    Class follows mediator design pattern. Acts as Observer, and handles the interactions between metronome app's widgets.
+    Concrete implementation of tkViewManager. Acts as Observer, and handles the interactions between metronome app's widgets.
     """
     def __init__(self, parent) -> None:
         """
         :parameter parent: The parent widget of this widget, The tkinter App
         """
-        ttk.Frame.__init__(self, parent)
-        Observer.__init__(self)
-
+        tkViewManager.__init__(self, parent)
+        
         self._beat_after_id = 0 # The id of each successive tkinter "after" event that controls the timing of the next beat.
         self._beacon_state = BeatType.REST
         self.master.set_bpm(120) # Beats per minute setting for the metronome.
-
-        self._CreateWidgets()
-
-        self.bind('<Destroy>', self.onDestroy, '+')
         
-    def onDestroy(self, event):
-        """
-        Method called after ttk.Frame is destroyed.
-        :return: None
-        """
-        # Detach this observer from it's subjects, the child widgets of the mediator / view manager
-        self._detach_from_subjects()
-        return None
-        
-    def _detach_from_subjects(self):
-        """
-        Detach from all widgets. Should be called when the app exits.
-        :return None:
-        """
-        self._bpm_widget.detach(self)
-        self._beacon_widget.detach(self)
-        self._start_stop_widget.detach(self)
-        return None
-
     def _CreateWidgets(self):
         """
-        Utility function to be called by __init__ to set up the child widgets of the tkMetronomeViewManager widget.
+        Concrete implementation of tkViewManager._CreateWidgets.
+        Sets up and registers the child widgets of the tkMetronomeViewManager widget.
         :return None:
         """
 
         self._bpm_widget = MetronomeBpmWidget(self, self.master.get_bpm())
+        self.register_subject(self._bpm_widget, self.handle_bmp_widget_update)
         self._bpm_widget.attach(self)
         self._bpm_widget.grid(column=0, row=0, rowspan=2, sticky='NWES') # Grid-2
         self.columnconfigure(0, weight=1) # Grid-2
         self.rowconfigure(0, weight=1) # Grid-2
 
         self._beacon_widget = MetronomeBeaconWidget(self)
-        self._beacon_widget.attach(self)
         self._beacon_widget.grid(column=2, row=0, sticky='NWES') # Grid-2
         self.columnconfigure(2, weight=1) # Grid-2
         self.rowconfigure(0, weight=1) # Grid-2
 
         self._start_stop_widget = MetronomeStartStopWidget(self)
+        self.register_subject(self._start_stop_widget, self.handle_start_stop_widget_update)
         self._start_stop_widget.attach(self)
         self._start_stop_widget.grid(column=2, row=1, sticky='NWES') # Grid-2
         self.columnconfigure(2, weight=1) # Grid-2
         self.rowconfigure(1, weight=1) # Grid-2
 
-        return None
-
-    def update(self, subject):
-        """
-        Implementation of Observer.update(). Acts as a switchboard based on which widget is notifying.
-        :parameter subject: Which widget instance is notifying the mediator?
-        :return None:
-        """
-        # Determine which widget is notifying us of an update.
-        match subject:
-            case self._start_stop_widget:
-                self.handle_start_stop_widget_update()
-            case self._bpm_widget:
-                self.handle_bmp_widget_update()
-            case self._beacon_widget:
-                pass
         return None
 
     def handle_start_stop_widget_update(self):

@@ -24,6 +24,12 @@ class Test_Subject(unittest.TestCase):
         sub = Subject()
         self.assertRaises(ValueError, sub.detach, obs)
 
+class Test_Observer(unittest.TestCase):
+    def test_update(self):
+        obs = Observer()
+        sub = Subject()
+        self.assertRaises(NotImplementedError, obs.update, sub)
+
 
 if __name__ == '__main__':
     unittest.main()
