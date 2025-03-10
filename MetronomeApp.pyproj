@@ -5,7 +5,7 @@
     <ProjectGuid>023c1807-3b05-4359-84de-2714bd3f0fc1</ProjectGuid>
     <ProjectHome>
     </ProjectHome>
-    <StartupFile>main.py</StartupFile>
+    <StartupFile>tkApppy.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -46,6 +46,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="test_tkViewManager.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tkApppy.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="tkMetronomeViewManager.py">
