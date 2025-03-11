@@ -1,65 +1,41 @@
 # standard imports
 import tkinter as tk
 from tkinter import ttk
+from tkinter.messagebox import showinfo
 
 # local imports
+from tkApp import tkApp
 from tkMetronomeViewManager import tkMetronomeViewManager
 from metronome import Metronome
 
 
-class MetronomeApp(ttk.Frame):
+class MetronomeApp(tkApp):
     """
-    Class represent a Metronome application built using tkinter.
+    Class represent a Metronome application built using tkinter, leveraging tkApp framework.
     """
     def __init__(self, parent) -> None:
-        super().__init__(parent)
-        self.grid(column=0, row=0, sticky='NWES') # Grid-0
-        # Weights control the relative "stretch" of each column and row as the frame is resized
-        parent.columnconfigure(0, weight=1) # Grid-0
-        parent.rowconfigure(0, weight=1) # Grid-0
-        parent.option_add('*tearOff', False) # Prevent menus from tearing off
-
-        # Create and setup a menubar for the app
-        self._setup_menubar()
         
         # Create/initialize the metronome business logic object
+        # Do this before calling super().__init__(...), because self._setup_child_widgets() requires it.
         self._metronome = Metronome()
         self._metronome.rhythm = 'WhhWhh'
         
-        # Create and setup the child widgets of the app
-        self._setup_child_widgets()
-
-        # If the user X's the main window, make sure we clean up 
-        parent.protocol("WM_DELETE_WINDOW", self.onExit)
-
-    def _setup_menubar(self):
-        """
-        Utility function to be called by __init__ to set up the menu bar of the app.
-        """
-        self._menubar = tk.Menu(self.master)
-        self.master['menu'] = self._menubar
-        self._menu_file = tk.Menu(self._menubar)
-        self._menubar.add_cascade(menu=self._menu_file, label='File')
-        self._menu_file.add_command(label='Exit', command=self.onExit)
-        return None
+        menu_dictionary = {'File':{'Exit':self.onFileExit},'Help':{'About':self.onHelpAbout}}
+        super().__init__(parent, title="Metronome App", menu_dict=menu_dictionary)
         
     def _setup_child_widgets(self):
         """
         Utility function to be called by __init__ to set up the child widgets of the app.
         """
+        # TODO: Is there a way, perhaps by using a factory pattern, that the view manager can be specified when
+        # the application is constructed? Challenge is that the parent of the view manager is the application,
+        # so the application must exist before the view manager can be constructed.
         self._view_manager = tkMetronomeViewManager(self)
         self._view_manager.grid(column=0, row=0, sticky='NWES') # Grid-1
         self.columnconfigure(0, weight=1) # Grid-1
         self.rowconfigure(0, weight=1) # Grid-1
         return None
         
-    def onExit(self):
-        """
-        Method called when menu item File | Exit is selected.
-        """
-        self.master.destroy()
-        return None
-
     def get_bpm(self):
         """
         Returns the number of beats per minute setting of the metronome.
@@ -82,5 +58,11 @@ class MetronomeApp(ttk.Frame):
         :return: (beat delay in seconds, stressed), as tuple
         """
         return self._metronome.next_beat()
-        
+
+    def onHelpAbout(self):
+        """
+        Method called when menu item Help | About is selected.
+        """
+        showinfo(title='About Metronome App', message='by Kevin Geurts', parent=self.master)
+        return None        
         

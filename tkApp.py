@@ -16,9 +16,9 @@ class tkApp(ttk.Frame):
         (2) Extend __init__() to create and initialize any required business logic objects for menubar selections
         (3) Define and implement handler functions for menu bar, beyond OnExit 
     """
-    def __init__(self, parent, view_manager = None, menu_dict = {}) -> None:
+    def __init__(self, parent, title = '', menu_dict = {}) -> None:
         """
-        :parameter view_manager: A tkViewManager object that will be the mediator for child widgets.
+        :parameter title: The title of the application, to appear on the app's main window, string
         :parameter menu_dict: A dictionary describing the app's menubar:
             {menu text string : handler callable or another menu_dict if there is a cascade}
             If menu_dict is empty, then the menubar will only have File|Exit which will call OnExit.
@@ -29,19 +29,13 @@ class tkApp(ttk.Frame):
         parent.columnconfigure(0, weight=1) # Grid-0
         parent.rowconfigure(0, weight=1) # Grid-0
         parent.option_add('*tearOff', False) # Prevent menus from tearing off
-
-        assert(isinstance(view_manager, tkViewManager))
-        self._view_manager = view_manager
-        if view_manager:
-            self._view_manager.grid(column=0, row=0, sticky='NWES') # Grid-1
-            self.columnconfigure(0, weight=1) # Grid-1
-            self.rowconfigure(0, weight=1) # Grid-1
+        parent.title(title)
 
         # Create and setup a menubar for the app
         if len(menu_dict)==0:
             # menu_dict is empty, so just set up File | Exit by default
             file_menu_dict={}
-            file_menu_dict['Exit']=self.onExit
+            file_menu_dict['Exit']=self.onFileExit
             menu_dict['File']=file_menu_dict
         self._setup_menubar(menu_dict)
         
@@ -49,7 +43,7 @@ class tkApp(ttk.Frame):
         self._setup_child_widgets()
 
         # If the user X's the main window, make sure we clean up 
-        parent.protocol("WM_DELETE_WINDOW", self.onExit)
+        parent.protocol("WM_DELETE_WINDOW", self.onFileExit)
 
     def _setup_menubar(self, menu_dict={}):
         """
@@ -60,9 +54,7 @@ class tkApp(ttk.Frame):
         """
         self._menubar = tk.Menu(self.master)
         self.master['menu'] = self._menubar
-        
         self._setup_menu(menu_dict, self._menubar)
-        
         return None
 
     def _setup_menu(self, menu_dict={}, add_to_menu=None):
@@ -72,18 +64,19 @@ class tkApp(ttk.Frame):
         :parameter menu_dict: A dictionary describing a cascade menu:
             {menu text string : handler callable or another menu_dict if there is another cascade}
         :parameter add_to_menu: The cascade menu object to which the next cascade or action should be added
-        :return: current_cascade, the current cascade menu object
+        :return: None
         """
-        for (menu_label, menu_action) in menu_dict:
+        for menu_label in menu_dict:
+            menu_action = menu_dict[menu_label]
             if type(menu_action) is dict:
                 # Set up a cascade
                 menu_obj=tk.Menu(add_to_menu)
-                current_cascade = add_to_menu.add_cascade(menu=menu_obj, label=menu_label)
+                add_to_menu.add_cascade(menu=menu_obj, label=menu_label)
                 self._setup_menu(menu_action, menu_obj)
             else:
                 assert(callable(menu_action))
                 add_to_menu.add_command(label=menu_label, command=menu_action)
-        return current_cascade
+        return None
 
     def _setup_child_widgets(self):
         """
@@ -93,7 +86,7 @@ class tkApp(ttk.Frame):
         raise NotImplementedError
         return None
         
-    def onExit(self):
+    def onFileExit(self):
         """
         Method called when menu item File | Exit is selected.
         """
