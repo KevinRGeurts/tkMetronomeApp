@@ -47,6 +47,8 @@ class Metronome:
     def rhythm(self, value):
         self._validate_rhythm(value)
         self._rhythm = value
+        # Reset _current_beat to beginning of rhythm string
+        self._current_beat=0
 
     def next_beat(self):
         """

@@ -1,12 +1,14 @@
 # Standard imports
 import tkinter as tk
 from tkinter import ttk
+from tkinter.messagebox import showerror
 import winsound
 
 # Local imports
 from tkViewManager import tkViewManager
 from ObserverPatternBase import Observer, Subject
 from metronome import BeatType
+from exceptions import InvalidRhythmSpecificationError
 
 
 class tkMetronomeViewManager(tkViewManager):
@@ -33,21 +35,28 @@ class tkMetronomeViewManager(tkViewManager):
         self._bpm_widget = MetronomeBpmWidget(self, self.master.get_bpm())
         self.register_subject(self._bpm_widget, self.handle_bmp_widget_update)
         self._bpm_widget.attach(self)
-        self._bpm_widget.grid(column=0, row=0, rowspan=2, sticky='NWES') # Grid-2
+        self._bpm_widget.grid(column=0, row=0, rowspan=3, sticky='NWES') # Grid-2
         self.columnconfigure(0, weight=1) # Grid-2
         self.rowconfigure(0, weight=1) # Grid-2
 
         self._beacon_widget = MetronomeBeaconWidget(self)
-        self._beacon_widget.grid(column=2, row=0, sticky='NWES') # Grid-2
-        self.columnconfigure(2, weight=1) # Grid-2
+        self._beacon_widget.grid(column=1, row=0, sticky='NWES') # Grid-2
+        self.columnconfigure(1, weight=1) # Grid-2
         self.rowconfigure(0, weight=1) # Grid-2
+
+        self._rhythm_widget = MetronomeRhythmWidget(self, rhythm='Www')
+        self.register_subject(self._rhythm_widget, self.handle_rhythm_widget_update)
+        self._rhythm_widget.attach(self)
+        self._rhythm_widget.grid(column=1, row=1, sticky='NWES') # Grid-2
+        self.columnconfigure(1, weight=1) # Grid-2
+        self.rowconfigure(1, weight=1) # Grid-2
 
         self._start_stop_widget = MetronomeStartStopWidget(self)
         self.register_subject(self._start_stop_widget, self.handle_start_stop_widget_update)
         self._start_stop_widget.attach(self)
-        self._start_stop_widget.grid(column=2, row=1, sticky='NWES') # Grid-2
-        self.columnconfigure(2, weight=1) # Grid-2
-        self.rowconfigure(1, weight=1) # Grid-2
+        self._start_stop_widget.grid(column=1, row=2, sticky='NWES') # Grid-2
+        self.columnconfigure(1, weight=1) # Grid-2
+        self.rowconfigure(2, weight=1) # Grid-2
 
         return None
 
@@ -59,10 +68,16 @@ class tkMetronomeViewManager(tkViewManager):
         if self._start_stop_widget.get_state():
             # Metronome should be started.
 
+            # Disable the rhythm widget. Can't change the rhythm while the metronome is started.
+            self._rhythm_widget.disable_rhythm_entry(True)
+
             # Start the event loop calling beat(...)
             self.beat()
         else:
             # Metronome should be stopped.
+
+            # Enable the rhythm widget. Can change the rhythm when the metronome is stopped.
+            self._rhythm_widget.disable_rhythm_entry(False)
 
             # Cancel the beat after callback
             self.master.after_cancel(self._beat_after_id)
@@ -79,6 +94,21 @@ class tkMetronomeViewManager(tkViewManager):
         :return None:
         """
         self.master.set_bpm(self._bpm_widget.get_state())
+        return None
+
+    def handle_rhythm_widget_update(self):
+        """
+        Handle updates from the rhythm widget.
+        :return None:
+        """
+        (rhythm_str, rhythm_valid) = self._rhythm_widget.get_state()
+        if rhythm_valid:
+            self.master.set_rhythm(rhythm_str)
+            # Enable start/stop button, since can run metronome with a valid rhythm
+            self._start_stop_widget.disable(False)
+        else:
+            # Disable start/stop button, since can't run metronome with an invalid rhythm
+            self._start_stop_widget.disable(True)
         return None
 
     def beat(self):
@@ -116,11 +146,11 @@ class MetronomeBpmWidget(ttk.Labelframe, Subject):
         """
         :parameter parent: tkinter widget that is the parent of this widget
         """
-        ttk.Labelframe.__init__(self, parent, text=f"Beats Per Minute")
+        ttk.Labelframe.__init__(self, parent, text="Beats Per Minute")
         Subject.__init__(self)
 
         self._scale_bpm = tk.Scale(self, orient=tk.VERTICAL, length='2i', from_=30, to=240, command=self.OnBpmChanged,
-                                   tickinterval=30)
+                                   tickinterval=30, takefocus=1)
         self._scale_bpm.grid(column=0, row=0) # Grid-2
         self.columnconfigure(0, weight=1) # Grid-2
         self.rowconfigure(0, weight=1) # Grid-2
@@ -190,6 +220,88 @@ class MetronomeStartStopWidget(ttk.Labelframe, Subject):
         # Notify observers
         self.notify()
 
+        return None
+    
+    def disable(self, disabled=True):
+        """
+        Used to set if the widget is enabled or disabled.
+        :parameter disabled: True if the widget should be disabled, False if it should be enabled, boolean
+        :return None:
+        """
+        if disabled:
+            self._btn_start_stop.state(['disabled'])
+        else:
+            self._btn_start_stop.state(['!disabled'])
+        return None
+
+
+class MetronomeRhythmWidget(ttk.Labelframe, Subject):
+    """
+    Class represents a tkinter label frame, the widget contents of which allow the rhythm of the metronome to be set.
+    Class is also a Subject in Observer design pattern.
+    """
+    def __init__(self, parent, rhythm='') -> None:
+        """
+        :parameter parent: tkinter widget that is the parent of this widget
+        :parameter rhythm: An initial rhythm pattern setting for this widget, string
+        """
+        ttk.Labelframe.__init__(self, parent, text='Rhythm')
+        Subject.__init__(self)
+
+        OnRhythmChangedCommand = self.register(self.OnRhythmChanged)
+        OnInvalidRhythmChangeCommand = self.register(self.OnInvalidRhythmChange)
+        self._entry_rhythm = ttk.Entry(self, validate='focusout', validatecommand=OnRhythmChangedCommand,
+                                       invalidcommand=OnInvalidRhythmChangeCommand)
+        self._entry_rhythm.grid(column=0, row=0) # Grid-2
+        self.columnconfigure(0, weight=1) # Grid-2
+        self.rowconfigure(0, weight=1) # Grid-2
+        self._value_rhythm=tk.StringVar()
+        self._value_rhythm.set(rhythm)
+        self._entry_rhythm['textvariable']=self._value_rhythm
+        self._rhythm_is_valid = True
+
+    def OnRhythmChanged(self):
+        """
+        Event handler for changes to rhythm entry.
+        :return None:
+        """
+        # Inform all observers of the change in rhythm setting of the metronome.
+        try:
+            # Validity here is an assumption only. If it isn't a good assumption, exception will be raised
+            # when notify() is called, and OnInvalidRhythmChange() will correct to False.
+            self._rhythm_is_valid = True
+            self.notify()
+            return True
+        except InvalidRhythmSpecificationError as e:
+            # TODO: Unpack error message from exception object and do something with it.
+            showerror(title='Metronome Rhythm Error', message=e.error_msg, parent=self)
+            return False
+
+    def OnInvalidRhythmChange(self):
+        """
+        Called when OnRhythmChanged returns False.
+        """
+        # TODO: Think the problem is that this function is required to fix the rhythm so it is valid.
+        # Once OnRhythmChanged returns false, then OnRhythmChanged seems to no longer be called.
+        self._rhythm_is_valid = False
+        self.notify()
+
+    def get_state(self):
+        """
+        Return the rhythm value and validity from the widget, as tuple (value as str, valid as boolean)
+        """
+        return (self._entry_rhythm.get(), self._rhythm_is_valid)
+
+    def disable_rhythm_entry(self, disabled=True):
+        """
+        Used to set if the widget will accept a rhythm entry or not.
+        :parameter disabled: True if the rhythm entry widget should be disabled, False if it should be enabled, boolean
+        :return None:
+        """
+        if disabled:
+            self._entry_rhythm.state(['disabled'])
+        else:
+            self._entry_rhythm.state(['!disabled'])
         return None
 
 

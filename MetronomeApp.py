@@ -7,6 +7,7 @@ from tkinter.messagebox import showinfo
 from tkApp import tkApp
 from tkMetronomeViewManager import tkMetronomeViewManager
 from metronome import Metronome
+from exceptions import InvalidRhythmSpecificationError
 
 
 class MetronomeApp(tkApp):
@@ -30,6 +31,8 @@ class MetronomeApp(tkApp):
         # TODO: Is there a way, perhaps by using a factory pattern, that the view manager can be specified when
         # the application is constructed? Challenge is that the parent of the view manager is the application,
         # so the application must exist before the view manager can be constructed.
+        # Wonder if the solution is for tkApp to have a factory method that produces a tkViewManager child of the
+        # right type?
         self._view_manager = tkMetronomeViewManager(self)
         self._view_manager.grid(column=0, row=0, sticky='NWES') # Grid-1
         self.columnconfigure(0, weight=1) # Grid-1
@@ -51,6 +54,21 @@ class MetronomeApp(tkApp):
         assert (bpm>0)
         self._metronome.tempo=bpm
     
+    def get_rhythm(self):
+        """
+        Returns the string representation of the metronome's rhythm.
+        :return: The string representation of the metronome's rhythm, string
+        """
+        return self._metronome.rhythm
+
+    def set_rhythm(self, rhythm_str):
+        """
+        Set the rhythm of the metronome.
+        :parameter rhythm_str: String representing the metronome rhythm, string
+        """
+        assert(type(rhythm_str) is str)
+        self._metronome.rhythm=rhythm_str
+
     def get_next_beat(self):
         """
         Return the delay until the next beat of the metronome (or that length of the current beat),
