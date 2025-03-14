@@ -21,8 +21,8 @@ class MetronomeApp(tkApp):
         self._metronome = Metronome()
         self._metronome.rhythm = 'WhhWhh'
         
-        menu_dictionary = {'File':{'Exit':self.onFileExit},'Help':{'About':self.onHelpAbout}}
-        super().__init__(parent, title="Metronome App", menu_dict=menu_dictionary)
+        menu_dictionary = {'File':{'Exit':self.onFileExit},'Help':{'About...':self.onHelpAbout}}
+        super().__init__(parent, title="Metronome", menu_dict=menu_dictionary)
         
     def _setup_child_widgets(self):
         """
@@ -81,6 +81,11 @@ class MetronomeApp(tkApp):
         """
         Method called when menu item Help | About is selected.
         """
-        showinfo(title='About Metronome App', message='by Kevin Geurts', parent=self.master)
+        msg = 'Metronome\n'
+        msg += 'version 0.1\n'
+        msg += 'Copyright (c) 2025 by Kevin Geurts\n'
+        msg += 'Licensed under the {some open source license}\n'
+        msg += '{github link}\n'
+        showinfo(title='About Metronome', message=msg, parent=self.master)
         return None        
         
