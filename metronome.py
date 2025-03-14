@@ -70,7 +70,7 @@ class Metronome:
                 beat_factor = 1.0
             case 'r':
                 stressed = BeatType.REST
-                beat_factor = 2.0 
+                beat_factor = 1.0 
             case 'H':
                 stressed = BeatType.STRESSED
                 beat_factor = 0.5 
@@ -104,7 +104,11 @@ class Metronome:
         match_result = re.match('[WwHhQqr]+', rhythm_str)
         # For rhythm_str to be valid, the match must be the same length as rhythm_str
         if  not match_result or len(rhythm_str) != len(match_result[0]):
-            raise InvalidRhythmSpecificationError(error_msg = 'Metronome rhythm specification is not valid.')
+            # TODO: Enhance error message to include which part(s) of the rhythm specification are invalid.
+            # Hopefully functionality of regular expression matching can help with this.
+            msg = 'Metronome rhythm specification is not valid.'
+            msg += 'It must contain only characters from this set: WwHhQqr'
+            raise InvalidRhythmSpecificationError(error_msg = msg)
         return None
 
 

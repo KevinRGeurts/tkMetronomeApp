@@ -111,6 +111,7 @@ class tkMetronomeViewManager(tkViewManager):
             self._start_stop_widget.disable(True)
         return None
 
+    # TODO: Should beat() be moved to MetronomeApp?
     def beat(self):
         """
         This is the function that is called to actually "tick" the metronome. Note that the timing of the beat is managed by the
@@ -123,11 +124,18 @@ class tkMetronomeViewManager(tkViewManager):
         
         # Turn off beacon, in case it was turned on by a previous beat
         self._beacon_widget.set_state(BeatType.REST)
-            
-        # Beep
-        frequency = 2500  # Set Frequency To 2500 Hertz
-        duration = 50  # Set Duration To 50 ms == 0.05 second (must be < 250, since maximum bpm is 240)
-        winsound.Beep(frequency, duration)
+        
+        # TODO: Make the frequency and duration of the beep for stressed and normal beats configurable.
+
+        # Beep (unless it is a rest beat)
+        if stressed is not BeatType.REST:
+            if stressed is BeatType.STRESSED:
+                frequency = 2500  # Set Frequency To 2500 Hertz
+                duration = 100  # Set Duration To 50 ms == 0.05 second (must be < 250, since maximum bpm is 240)
+            elif stressed is BeatType.NORMAL:
+                frequency = 2500  # Set Frequency To 2500 Hertz
+                duration = 50  # Set Duration To 50 ms == 0.05 second (must be < 250, since maximum bpm is 240)
+            winsound.Beep(frequency, duration)
 
         # Turn on beacon, to "flash" it as part of the beat, for either a normal or stressed beat
         self._beacon_widget.set_state(stressed)
