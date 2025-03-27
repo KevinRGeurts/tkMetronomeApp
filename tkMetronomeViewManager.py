@@ -281,7 +281,6 @@ class MetronomeRhythmWidget(ttk.Labelframe, Subject):
             self.notify()
             return True
         except InvalidRhythmSpecificationError as e:
-            # TODO: Unpack error message from exception object and do something with it.
             showerror(title='Metronome Rhythm Error', message=e.error_msg, parent=self)
             return False
 
@@ -289,8 +288,6 @@ class MetronomeRhythmWidget(ttk.Labelframe, Subject):
         """
         Called when OnRhythmChanged returns False.
         """
-        # TODO: Think the problem is that this function is required to fix the rhythm so it is valid.
-        # Once OnRhythmChanged returns false, then OnRhythmChanged seems to no longer be called.
         self._rhythm_is_valid = False
         self.notify()
 

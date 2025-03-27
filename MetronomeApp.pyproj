@@ -6,8 +6,7 @@
     <ProjectHome>
     </ProjectHome>
     <StartupFile>main.py</StartupFile>
-    <SearchPath>
-    </SearchPath>
+    <SearchPath>..\tkAppFramework</SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <Name>MetronomeApp</Name>
@@ -33,28 +32,13 @@
     </Compile>
     <Compile Include="metronome.py" />
     <Compile Include="MetronomeApp.py" />
-    <Compile Include="ObserverPatternBase.py">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="test_MetronomeApp.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="test_ObserverPatternBase.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="test_metronome.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="test_tkViewManager.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="tkApp.py">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="tkMetronomeViewManager.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="tkViewManager.py">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>

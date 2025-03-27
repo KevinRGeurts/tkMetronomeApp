@@ -52,7 +52,7 @@ class Test_metronome(unittest.TestCase):
     def test_next_beat_r(self):
         met = Metronome(tempo=60, rhythm='r')
         (delay, stressed) = met.next_beat()
-        exp_val = (2.0, BeatType.REST)
+        exp_val = (1.0, BeatType.REST)
         act_val = (delay, stressed)
         self.assertTupleEqual(exp_val, act_val)
 

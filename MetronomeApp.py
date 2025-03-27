@@ -21,7 +21,7 @@ class MetronomeApp(tkApp):
         self._metronome = Metronome()
         self._metronome.rhythm = 'WhhWhh'
         
-        menu_dictionary = {'File':{'Exit':self.onFileExit},'Help':{'About...':self.onHelpAbout}}
+        menu_dictionary = {'File':{'Exit':self.onFileExit},'Help':{'View Help':self.onViewHelp,'About...':self.onHelpAbout}}
         super().__init__(parent, title="Metronome", menu_dict=menu_dictionary)
         
     def _setup_child_widgets(self):
@@ -87,5 +87,12 @@ class MetronomeApp(tkApp):
         msg += 'Licensed under the {some open source license}\n'
         msg += '{github link}\n'
         showinfo(title='About Metronome', message=msg, parent=self.master)
-        return None        
+        return None
+    
+    def onViewHelp(self):
+        """
+        Method called when menu item Help | View Help is selected. Launch help app to view help.
+        :return: None
+        """
+        return None
         

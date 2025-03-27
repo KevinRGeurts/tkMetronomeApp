@@ -23,3 +23,18 @@ Some possible additional new features:
 1. Display count along with flash, like 1 ... 2 ... 3 ... 4 ... 1 ... 2 ... 3 ... 4
 	a. Issue ... counts should only be on W/w beats, or shorter that sum to that?
 2. Should the count be like W=1, H=&, Q=e-a ?
+
+UML Type Information:
+tkApp:
+	is-a ttk.Frame
+	has-a master that is-a top level tkinter widget
+MetronomeApp:
+	is-a tkApp
+tkViewManager:
+	is-a ttk.Frame and an Observer
+	has-a master that is-a MetronomeApp
+tkMetronomeViewManager:
+	is-a tkViewManager
+tkHelpViewer:
+	is-a tk.TopLevel or tkViewManager
+	has-a master that is-a ?
