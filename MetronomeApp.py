@@ -2,12 +2,29 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter.messagebox import showinfo
+from multiprocessing import Process
 
 # local imports
 from tkApp import tkApp
 from tkMetronomeViewManager import tkMetronomeViewManager
 from metronome import Metronome
 from exceptions import InvalidRhythmSpecificationError
+from tkHelpApp import tkHelpApp
+
+
+# TODO: This function probably should be served by the HelpApp or tkApp project, but place it here for now for
+# testing the concept. Note that it cannot be a member of MetronomeApp, do to Process using pickle.
+def _launch_help_app():
+    """
+    Launch tkinter app for displaying online help.
+    """
+    # Create and configure the app
+    root = tk.Tk()
+    myapp = tkHelpApp(root)
+
+    # Start the app's event loop running
+    myapp.mainloop()
+    return None
 
 
 class MetronomeApp(tkApp):
@@ -23,6 +40,9 @@ class MetronomeApp(tkApp):
         
         menu_dictionary = {'File':{'Exit':self.onFileExit},'Help':{'View Help':self.onViewHelp,'About...':self.onHelpAbout}}
         super().__init__(parent, title="Metronome", menu_dict=menu_dictionary)
+
+        # Process running the HelpApp
+        self._help_process = None
         
     def _setup_child_widgets(self):
         """
@@ -37,6 +57,15 @@ class MetronomeApp(tkApp):
         self._view_manager.grid(column=0, row=0, sticky='NWES') # Grid-1
         self.columnconfigure(0, weight=1) # Grid-1
         self.rowconfigure(0, weight=1) # Grid-1
+        return None
+
+    def onFileExit(self):
+        """
+        Extend method from tkApp.
+        """
+        if self._help_process:
+            print(f"Help Process {self._help_process.name} is alive={self._help_process.is_alive()}")
+        super().onFileExit()
         return None
         
     def get_bpm(self):
@@ -89,10 +118,14 @@ class MetronomeApp(tkApp):
         showinfo(title='About Metronome', message=msg, parent=self.master)
         return None
     
+    # TODO: Consider refactoring and moving this functionality to tkApp project.
     def onViewHelp(self):
         """
         Method called when menu item Help | View Help is selected. Launch help app to view help.
         :return: None
         """
+        self._help_process = Process(target=_launch_help_app, name='HelpApp Process')
+        self._help_process.start()
+        
         return None
         
