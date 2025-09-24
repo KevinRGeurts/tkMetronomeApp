@@ -8,7 +8,6 @@ from multiprocessing import Process
 from tkApp import tkApp
 from tkMetronomeViewManager import tkMetronomeViewManager
 from metronome import Metronome
-from exceptions import InvalidRhythmSpecificationError
 from tkHelpApp import tkHelpApp
 
 
@@ -43,21 +42,12 @@ class MetronomeApp(tkApp):
 
         # Process running the HelpApp
         self._help_process = None
-        
-    def _setup_child_widgets(self):
+
+    def _createViewManager(self):
         """
-        Utility function to be called by __init__ to set up the child widgets of the app.
+        Factory method to create the view manager for the app.
         """
-        # TODO: Is there a way, perhaps by using a factory pattern, that the view manager can be specified when
-        # the application is constructed? Challenge is that the parent of the view manager is the application,
-        # so the application must exist before the view manager can be constructed.
-        # Wonder if the solution is for tkApp to have a factory method that produces a tkViewManager child of the
-        # right type?
-        self._view_manager = tkMetronomeViewManager(self)
-        self._view_manager.grid(column=0, row=0, sticky='NWES') # Grid-1
-        self.columnconfigure(0, weight=1) # Grid-1
-        self.rowconfigure(0, weight=1) # Grid-1
-        return None
+        return tkMetronomeViewManager(self)
 
     def onFileExit(self):
         """
@@ -112,9 +102,9 @@ class MetronomeApp(tkApp):
         """
         msg = 'Metronome\n'
         msg += 'version 0.1\n'
-        msg += 'Copyright (c) 2025 by Kevin Geurts\n'
-        msg += 'Licensed under the {some open source license}\n'
-        msg += '{github link}\n'
+        msg += 'Copyright (c) 2025 by Kevin R. Geurts\n'
+        msg += 'Licensed under the MIT License\n'
+        msg += 'Source: https://github.com/KevinRGeurts/tkAppFramework\n'
         showinfo(title='About Metronome', message=msg, parent=self.master)
         return None
     

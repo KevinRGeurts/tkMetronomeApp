@@ -6,7 +6,7 @@ import winsound
 
 # Local imports
 from tkViewManager import tkViewManager
-from ObserverPatternBase import Observer, Subject
+from ObserverPatternBase import Subject
 from metronome import BeatType
 from exceptions import InvalidRhythmSpecificationError
 
@@ -44,7 +44,7 @@ class tkMetronomeViewManager(tkViewManager):
         self.columnconfigure(1, weight=1) # Grid-2
         self.rowconfigure(0, weight=1) # Grid-2
 
-        self._rhythm_widget = MetronomeRhythmWidget(self, rhythm='Www')
+        self._rhythm_widget = MetronomeRhythmWidget(self, rhythm=self.master.get_rhythm())
         self.register_subject(self._rhythm_widget, self.handle_rhythm_widget_update)
         self._rhythm_widget.attach(self)
         self._rhythm_widget.grid(column=1, row=1, sticky='NWES') # Grid-2
@@ -159,9 +159,9 @@ class MetronomeBpmWidget(ttk.Labelframe, Subject):
 
         self._scale_bpm = tk.Scale(self, orient=tk.VERTICAL, length='2i', from_=30, to=240, command=self.OnBpmChanged,
                                    tickinterval=30, takefocus=1)
-        self._scale_bpm.grid(column=0, row=0) # Grid-2
-        self.columnconfigure(0, weight=1) # Grid-2
-        self.rowconfigure(0, weight=1) # Grid-2
+        self._scale_bpm.grid(column=0, row=0) # Grid-3
+        self.columnconfigure(0, weight=1) # Grid-3
+        self.rowconfigure(0, weight=1) # Grid-3
         self._value_bpm=tk.IntVar()
         self._value_bpm.set(bpm)
         self._scale_bpm['variable']=self._value_bpm
@@ -192,9 +192,9 @@ class MetronomeStartStopWidget(ttk.Labelframe, Subject):
         Subject.__init__(self)
         
         self._btn_start_stop = ttk.Button(self, command=self.OnStartStopButtonClicked)
-        self._btn_start_stop.grid(column=0, row=0) # Grid-2
-        self.columnconfigure(0, weight=1) # Grid-2
-        self.rowconfigure(0, weight=1) # Grid-2
+        self._btn_start_stop.grid(column=0, row=0) # Grid-3
+        self.columnconfigure(0, weight=1) # Grid-3
+        self.rowconfigure(0, weight=1) # Grid-3
         self._lbl_start_stop=tk.StringVar()
         self._lbl_start_stop.set('Start')
         self._btn_start_stop['textvariable']=self._lbl_start_stop
@@ -260,9 +260,9 @@ class MetronomeRhythmWidget(ttk.Labelframe, Subject):
         OnInvalidRhythmChangeCommand = self.register(self.OnInvalidRhythmChange)
         self._entry_rhythm = ttk.Entry(self, validate='focusout', validatecommand=OnRhythmChangedCommand,
                                        invalidcommand=OnInvalidRhythmChangeCommand)
-        self._entry_rhythm.grid(column=0, row=0) # Grid-2
-        self.columnconfigure(0, weight=1) # Grid-2
-        self.rowconfigure(0, weight=1) # Grid-2
+        self._entry_rhythm.grid(column=0, row=0) # Grid-3
+        self.columnconfigure(0, weight=1) # Grid-3
+        self.rowconfigure(0, weight=1) # Grid-3
         self._value_rhythm=tk.StringVar()
         self._value_rhythm.set(rhythm)
         self._entry_rhythm['textvariable']=self._value_rhythm
@@ -320,9 +320,9 @@ class MetronomeBeaconWidget(ttk.Labelframe, Subject):
         Subject.__init__(self)
         
         self._btn_beacon=tk.Button(self)
-        self._btn_beacon.grid(column=0, row=0) # Grid-2
-        self.columnconfigure(0, weight=1) # Grid-2
-        self.rowconfigure(0, weight=1) # Grid-2
+        self._btn_beacon.grid(column=0, row=0) # Grid-3
+        self.columnconfigure(0, weight=1) # Grid-3
+        self.rowconfigure(0, weight=1) # Grid-3
         self._lbl_beacon=tk.StringVar()
         self._lbl_beacon.set('--')
         self._btn_beacon['textvariable']=self._lbl_beacon
