@@ -38,3 +38,22 @@ tkMetronomeViewManager:
 tkHelpViewer:
 	is-a tk.TopLevel or tkViewManager
 	has-a master that is-a ?
+
+
+9/25/2025:
+Enhanced tkAppFramework to use Model subclass so that it is a Model-View-Controller (MVC) design pattern.
+In this case the View and Controller are both represented by tkViewManager subclasses. This was intended to 
+regularize the data / business logic architecture, whereas prior, MetronomeApp had "rolled its own" data and business logic
+architecture.
+
+Since tkViewManger subclasses now observe both Model subclasses and widgets, this requires some thinking about
+how updates are handled. For example:
+
+Imagine the user changes the tempo using the BPM Widget. The BPM Widget will notify the tkMetronomeViewManager.
+The registered handler in tkMetronomeViewManager will update the Metronome (which is a Model subclass).
+The Metronome will notify the tkMetronomeViewManager. If the tkMetronomeViewManager updates the BPM Widget, we are
+in an infinite loop. (Note, an example of an update to Metronome model that is not initiated by a widget will be
+when a saved Metronome state is loaded from a file.)
+
+A possible solution is to have the update handler functions in tkMetronomeViewManager check for consistency between
+the Model data and the Widget data before updating the Widget or the Model. If they are consistent, do nothing.

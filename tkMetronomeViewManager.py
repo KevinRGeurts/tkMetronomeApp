@@ -17,13 +17,14 @@ class tkMetronomeViewManager(tkViewManager):
     """
     def __init__(self, parent) -> None:
         """
-        :parameter parent: The parent widget of this widget, The tkinter App
+        :parameter parent: The parent widget of this widget, The tkinter App, which hereafter will be
+        accessed as self.master.
         """
         tkViewManager.__init__(self, parent)
         
         self._beat_after_id = 0 # The id of each successive tkinter "after" event that controls the timing of the next beat.
         self._beacon_state = BeatType.REST
-        self.master.set_bpm(120) # Beats per minute setting for the metronome.
+        # self.getModel().tempo=120 # Beats per minute setting for the metronome.
         
     def _CreateWidgets(self):
         """
@@ -32,7 +33,7 @@ class tkMetronomeViewManager(tkViewManager):
         :return None:
         """
 
-        self._bpm_widget = MetronomeBpmWidget(self, self.master.get_bpm())
+        self._bpm_widget = MetronomeBpmWidget(self, bpm=self.getModel().tempo)
         self.register_subject(self._bpm_widget, self.handle_bmp_widget_update)
         self._bpm_widget.attach(self)
         self._bpm_widget.grid(column=0, row=0, rowspan=3, sticky='NWES') # Grid-2
@@ -44,7 +45,7 @@ class tkMetronomeViewManager(tkViewManager):
         self.columnconfigure(1, weight=1) # Grid-2
         self.rowconfigure(0, weight=1) # Grid-2
 
-        self._rhythm_widget = MetronomeRhythmWidget(self, rhythm=self.master.get_rhythm())
+        self._rhythm_widget = MetronomeRhythmWidget(self, rhythm=self.getModel().rhythm)
         self.register_subject(self._rhythm_widget, self.handle_rhythm_widget_update)
         self._rhythm_widget.attach(self)
         self._rhythm_widget.grid(column=1, row=1, sticky='NWES') # Grid-2
@@ -60,6 +61,25 @@ class tkMetronomeViewManager(tkViewManager):
 
         return None
 
+    def handle_model_update(self):
+        """
+        Handle updates from the model.
+        :return None:
+        """
+        model_bpm = self.getModel().tempo
+        widget_bpm = self._bpm_widget.get_state()
+        # For efficiency, only update the bpm widget if it's bpm value doesn't match the model value.
+        if widget_bpm != model_bpm:
+            self._bpm_widget._value_bpm.set(model_bpm)
+        
+        model_rhythm = self.getModel().rhythm
+        (widget_rhythm, widget_rhythm_valid) = self._rhythm_widget.get_state()
+        # For efficiency, only update the rhythm widget if it's rhythm value doesn't match the model value.
+        if widget_rhythm != model_rhythm:
+            self._rhythm_widget._value_rhythm.set(model_rhythm)
+        
+        return None
+        
     def handle_start_stop_widget_update(self):
         """
         Handle updates from the start_stop_widget:
@@ -93,7 +113,11 @@ class tkMetronomeViewManager(tkViewManager):
         Handle updates from bpm widget.
         :return None:
         """
-        self.master.set_bpm(self._bpm_widget.get_state())
+        model_bpm = self.getModel().tempo
+        widget_bpm = self._bpm_widget.get_state()
+        # For efficiency, only update the model bpm value if it doesn't match the widget value.
+        if model_bpm != widget_bpm:
+            self.getModel().tempo = widget_bpm
         return None
 
     def handle_rhythm_widget_update(self):
@@ -103,7 +127,10 @@ class tkMetronomeViewManager(tkViewManager):
         """
         (rhythm_str, rhythm_valid) = self._rhythm_widget.get_state()
         if rhythm_valid:
-            self.master.set_rhythm(rhythm_str)
+            model_rhythm = self.getModel().rhythm
+            # For efficiency, only update the model rhythm value if it doesn't match the widget value.
+            if model_rhythm != rhythm_str:
+                self.getModel().rhythm = rhythm_str
             # Enable start/stop button, since can run metronome with a valid rhythm
             self._start_stop_widget.disable(False)
         else:
@@ -119,7 +146,7 @@ class tkMetronomeViewManager(tkViewManager):
         :return None:
         """
         # Determine beat delay, the time until the next beat (click) of the metronome in seconds
-        (beat_delay, stressed) = self.master.get_next_beat()
+        (beat_delay, stressed) = self.getModel().next_beat()
         print(f"delay (s): {beat_delay}, stressed beat: {stressed}")
         
         # Turn off beacon, in case it was turned on by a previous beat

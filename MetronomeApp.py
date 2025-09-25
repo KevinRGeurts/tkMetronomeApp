@@ -32,12 +32,8 @@ class MetronomeApp(tkApp):
     """
     def __init__(self, parent) -> None:
         
-        # Create/initialize the metronome business logic object
-        # Do this before calling super().__init__(...), because self._setup_child_widgets() requires it.
-        self._metronome = Metronome()
-        self._metronome.rhythm = 'WhhWhh'
-        
-        menu_dictionary = {'File':{'Exit':self.onFileExit},'Help':{'View Help':self.onViewHelp,'About...':self.onHelpAbout}}
+        # TODO: Remove the File | Test menu item before production release.
+        menu_dictionary = {'File':{'Exit':self.onFileExit, 'Test':self.onFileTest},'Help':{'View Help':self.onViewHelp,'About...':self.onHelpAbout}}
         super().__init__(parent, title="Metronome", menu_dict=menu_dictionary)
 
         # Process running the HelpApp
@@ -46,8 +42,17 @@ class MetronomeApp(tkApp):
     def _createViewManager(self):
         """
         Factory method to create the view manager for the app.
+        :return: The view manager for the app, tkMetronomeViewManager
         """
         return tkMetronomeViewManager(self)
+
+    def _createModel(self):
+        """
+        Factory method to create the model for the app.
+        :return: The model for the app, Metronome
+        """
+        # return Metronome(rhythm='WhhWhh')
+        return Metronome()
 
     def onFileExit(self):
         """
@@ -57,44 +62,16 @@ class MetronomeApp(tkApp):
             print(f"Help Process {self._help_process.name} is alive={self._help_process.is_alive()}")
         super().onFileExit()
         return None
-        
-    def get_bpm(self):
-        """
-        Returns the number of beats per minute setting of the metronome.
-        :return: The number of beats per minute setting of the metronome, int
-        """
-        return self._metronome.tempo
 
-    def set_bpm(self, bpm):
+    # TODO: Remove this temporary test method before production release.
+    def onFileTest(self):
         """
-        Set the number of beats per minute setting of the metronome.
-        :parameter bpm: The number of beats per minute, int
+        Method called when menu item File | Test is selected. This is temporary for testing purposes.
         """
-        assert (bpm>0)
-        self._metronome.tempo=bpm
-    
-    def get_rhythm(self):
-        """
-        Returns the string representation of the metronome's rhythm.
-        :return: The string representation of the metronome's rhythm, string
-        """
-        return self._metronome.rhythm
-
-    def set_rhythm(self, rhythm_str):
-        """
-        Set the rhythm of the metronome.
-        :parameter rhythm_str: String representing the metronome rhythm, string
-        """
-        assert(type(rhythm_str) is str)
-        self._metronome.rhythm=rhythm_str
-
-    def get_next_beat(self):
-        """
-        Return the delay until the next beat of the metronome (or that length of the current beat),
-        and whether or not the current beat is stressed.
-        :return: (beat delay in seconds, stressed), as tuple
-        """
-        return self._metronome.next_beat()
+        # Test notification process when model changes.
+        self.getModel().tempo = 120
+        self.getModel().rhythm = 'wH'
+        return None
 
     def onHelpAbout(self):
         """

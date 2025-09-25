@@ -8,6 +8,7 @@ import re as re
 
 # local imports
 from exceptions import InvalidRhythmSpecificationError
+from model import Model
 
 
 class BeatType(Enum):
@@ -19,14 +20,15 @@ class BeatType(Enum):
     STRESSED = 3
 
 
-class Metronome:
+class Metronome(Model):
     """
-    This class represents the "business logic" of a metronome.
+    This class represents the "business logic" of a metronome, and is a Model in the MVC pattern.
         _tempo: The tempo of the metronome, in bpm (beats per minute), int
         _rhythm: A string representing the rhythm of the metronome beats, string
         _current_beat: Current location in the rhythm string, int
     """
     def __init__(self, tempo = 60, rhythm = 'Wwww'):
+        super().__init__()
         self.tempo = tempo
         self.rhythm = rhythm 
         self._current_beat = 0
@@ -37,7 +39,9 @@ class Metronome:
 
     @tempo.setter
     def tempo(self, value):
+        assert(value > 0)
         self._tempo = value
+        self.notify()
 
     @property
     def rhythm(self):
@@ -49,6 +53,7 @@ class Metronome:
         self._rhythm = value
         # Reset _current_beat to beginning of rhythm string
         self._current_beat=0
+        self.notify()
 
     def next_beat(self):
         """
