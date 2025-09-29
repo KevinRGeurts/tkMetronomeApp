@@ -5,7 +5,7 @@ from tkinter.messagebox import showinfo
 from multiprocessing import Process
 
 # local imports
-from tkApp import tkApp
+from tkApp import AppAboutInfo, tkApp
 from tkMetronomeViewManager import tkMetronomeViewManager
 from metronome import Metronome
 from tkHelpApp import tkHelpApp
@@ -34,7 +34,9 @@ class MetronomeApp(tkApp):
         
         # TODO: Remove the File | Test menu item before production release.
         menu_dictionary = {'File':{'Exit':self.onFileExit, 'Test':self.onFileTest},'Help':{'View Help':self.onViewHelp,'About...':self.onHelpAbout}}
-        super().__init__(parent, title="Metronome", menu_dict=menu_dictionary)
+        info = AppAboutInfo(name='Metronome', version='0.1', copyright='2025', author='Kevin R. Geurts',
+                            license='MIT License', source='https://github.com/KevinRGeurts/tkAppFramework')
+        super().__init__(parent, title="Metronome", menu_dict=menu_dictionary, app_info=info)
 
         # Process running the HelpApp
         self._help_process = None
@@ -73,18 +75,6 @@ class MetronomeApp(tkApp):
         self.getModel().rhythm = 'wH'
         return None
 
-    def onHelpAbout(self):
-        """
-        Method called when menu item Help | About is selected.
-        """
-        msg = 'Metronome\n'
-        msg += 'version 0.1\n'
-        msg += 'Copyright (c) 2025 by Kevin R. Geurts\n'
-        msg += 'Licensed under the MIT License\n'
-        msg += 'Source: https://github.com/KevinRGeurts/tkAppFramework\n'
-        showinfo(title='About Metronome', message=msg, parent=self.master)
-        return None
-    
     # TODO: Consider refactoring and moving this functionality to tkApp project.
     def onViewHelp(self):
         """
