@@ -87,4 +87,15 @@ class MetronomeApp(tkApp):
         self._help_process.start()
         
         return None
+
+
+if __name__ == '__main__':
+    # Get Tcl interpreter up and running and get the root widget
+    root = tk.Tk()
+    # Create the metronome app
+    app = MetronomeApp(root)
+    # Start the metronome app's event loop running
+    app.mainloop()
+
+
         

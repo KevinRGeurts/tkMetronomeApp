@@ -5,7 +5,7 @@
     <ProjectGuid>023c1807-3b05-4359-84de-2714bd3f0fc1</ProjectGuid>
     <ProjectHome>
     </ProjectHome>
-    <StartupFile>main.py</StartupFile>
+    <StartupFile>MetronomeApp.py</StartupFile>
     <SearchPath>..\tkAppFramework;..\HelpApp;..\JsonUtils</SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
