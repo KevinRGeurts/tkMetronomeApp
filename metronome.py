@@ -9,6 +9,7 @@ import re as re
 # local imports
 from exceptions import InvalidRhythmSpecificationError
 from model import Model
+from JsonUtils import JSONWriter, JSONReader
 
 
 class BeatType(Enum):
@@ -115,6 +116,48 @@ class Metronome(Model):
             msg += 'It must contain only characters from this set: WwHhQqr'
             raise InvalidRhythmSpecificationError(error_msg = msg)
         return None
+
+    def readModelFromFile(self, file, filetype) -> None:
+        """
+        Read the model data from a file-like object.
+        :parameter file: A file-like object from which to read the model data.
+        :parameter filetype: A string indicating the type of file (e.g., 'json', 'xml', etc.).
+        :return: None
+        """
+        # Read the JSON string from the file-like object
+        if filetype != '.json':
+            raise ValueError('Metronome.readModelFromFile() only supports filetype ".json"')
+        json = file.read()
+        # Convert the JSON string to a dictionary
+        jr = JSONReader(safety='safe_obj')
+        data = jr.json_string_to_dict(json)
+        # Map the data dictionary to the model attributes
+        self.tempo = data['tempo']
+        self.rhythm = data['rhythm']
+        # Inform observers that the model has changed
+        self.notify()
+        return None    
+
+    def writeModelToFile(self, file, filetype) -> None:
+        """
+        Write the model data to a file-like object.
+        :parameter file: A file-like object to which to write the model data.
+        :parameter filetype: A string indicating the type of file (e.g., 'json', 'xml', etc.).
+        :return: None
+        """
+        if filetype != '.json':
+            raise ValueError('Metronome.writeModelToFile() only supports filetype ".json"')
+        # Add the model data to a dictionary
+        data = {'tempo': self.tempo, 'rhythm': self.rhythm}
+        # Convert the dictionary to a JSON string
+        jr = JSONWriter()
+        json = jr.dict_to_json_string(data)
+        # Write the JSON string to the file-like object
+        file.write(json)
+        return None
+
+
+
 
 
 

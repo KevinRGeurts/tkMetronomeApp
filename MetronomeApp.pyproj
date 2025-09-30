@@ -6,7 +6,7 @@
     <ProjectHome>
     </ProjectHome>
     <StartupFile>main.py</StartupFile>
-    <SearchPath>..\tkAppFramework;..\HelpApp</SearchPath>
+    <SearchPath>..\tkAppFramework;..\HelpApp;..\JsonUtils</SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <Name>MetronomeApp</Name>

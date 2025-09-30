@@ -33,10 +33,12 @@ class MetronomeApp(tkApp):
     def __init__(self, parent) -> None:
         
         # TODO: Remove the File | Test menu item before production release.
-        menu_dictionary = {'File':{'Exit':self.onFileExit, 'Test':self.onFileTest},'Help':{'View Help':self.onViewHelp,'About...':self.onHelpAbout}}
+        menu_dictionary = {'File':{'Open...':self.onFileOpen, 'Save':self.onFileSave, 'Save As...':self.onFileSaveAs, 'Exit':self.onFileExit, 'Test':self.onFileTest}, \
+                           'Help':{'View Help':self.onViewHelp,'About...':self.onHelpAbout}}
         info = AppAboutInfo(name='Metronome', version='0.1', copyright='2025', author='Kevin R. Geurts',
                             license='MIT License', source='https://github.com/KevinRGeurts/tkAppFramework')
-        super().__init__(parent, title="Metronome", menu_dict=menu_dictionary, app_info=info)
+        super().__init__(parent, title="Metronome", menu_dict=menu_dictionary, app_info=info,
+                         file_types=[('JSON file', '*.json')])
 
         # Process running the HelpApp
         self._help_process = None
