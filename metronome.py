@@ -9,7 +9,7 @@ import re as re
 # local imports
 from exceptions import InvalidRhythmSpecificationError
 from model import Model
-from JsonUtils import JSONWriter, JSONReader
+import json
 
 
 class BeatType(Enum):
@@ -127,10 +127,9 @@ class Metronome(Model):
         # Read the JSON string from the file-like object
         if filetype != '.json':
             raise ValueError('Metronome.readModelFromFile() only supports filetype ".json"')
-        json = file.read()
+        json_string = file.read()
         # Convert the JSON string to a dictionary
-        jr = JSONReader(safety='safe_obj')
-        data = jr.json_string_to_dict(json)
+        data = json.loads(json_string)
         # Map the data dictionary to the model attributes
         self.tempo = data['tempo']
         self.rhythm = data['rhythm']
@@ -150,10 +149,9 @@ class Metronome(Model):
         # Add the model data to a dictionary
         data = {'tempo': self.tempo, 'rhythm': self.rhythm}
         # Convert the dictionary to a JSON string
-        jr = JSONWriter()
-        json = jr.dict_to_json_string(data)
+        json_string = json.dumps(data)
         # Write the JSON string to the file-like object
-        file.write(json)
+        file.write(json_string)
         return None
 
 
