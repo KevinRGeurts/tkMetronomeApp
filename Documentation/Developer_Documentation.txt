@@ -57,3 +57,13 @@ when a saved Metronome state is loaded from a file.)
 
 A possible solution is to have the update handler functions in tkMetronomeViewManager check for consistency between
 the Model data and the Widget data before updating the Widget or the Model. If they are consistent, do nothing.
+
+10/9/2025:
+TODO before publishing on GitHub: (not in any particular order)
+(1) Write HelpFile.txt help content. Include need to tab away from Rhythm widget when setting a new rhythm.
+(2) Finish creating content for README.md
+(3) Research packaging and environments as the way for the Metronome getting access to the tkAppFramework.
+(4) Move LICENSE.txt to project's root folder.
+(5) Decide if main.py is still needed.
+(6) Improve comments and docstrings as needed throughout.
+(7) What else?

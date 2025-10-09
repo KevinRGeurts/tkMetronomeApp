@@ -6,7 +6,7 @@
     <ProjectHome>
     </ProjectHome>
     <StartupFile>MetronomeApp.py</StartupFile>
-    <SearchPath>..\tkAppFramework;..\HelpApp;..\JsonUtils</SearchPath>
+    <SearchPath>..\tkAppFramework</SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <Name>MetronomeApp</Name>
@@ -53,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Documentation\" />
+    <Folder Include="Help\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

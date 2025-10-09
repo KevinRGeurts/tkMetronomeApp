@@ -3,6 +3,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter.messagebox import showerror
 import winsound
+import logging
 
 # Local imports
 from tkViewManager import tkViewManager
@@ -138,16 +139,22 @@ class tkMetronomeViewManager(tkViewManager):
             self._start_stop_widget.disable(True)
         return None
 
-    # TODO: Should beat() be moved to MetronomeApp?
     def beat(self):
         """
         This is the function that is called to actually "tick" the metronome. Note that the timing of the beat is managed by the
         tkinter event loop.
         :return None:
         """
+        # Note: It may seem a little odd that this function is part of the view manager, but:
+        # (1) It is here, and not in the App, because the App shouldn't have to know about the details of the widgets.
+        # (2) It is here, and not in the model, because the timing mechanism is part of the tkinter event loop.
+
+        # Get the logger 'metronome_app_logger'
+        logger = logging.getLogger('metronome_app_logger')
+
         # Determine beat delay, the time until the next beat (click) of the metronome in seconds
         (beat_delay, stressed) = self.getModel().next_beat()
-        print(f"delay (s): {beat_delay}, stressed beat: {stressed}")
+        logger.debug(f"delay (s): {beat_delay}, stressed beat: {stressed}")
         
         # Turn off beacon, in case it was turned on by a previous beat
         self._beacon_widget.set_state(BeatType.REST)

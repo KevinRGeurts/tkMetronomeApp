@@ -1,0 +1,1 @@
+This is help content for the Metronome application
