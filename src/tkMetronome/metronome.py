@@ -8,7 +8,7 @@ import re as re
 
 # local imports
 from exceptions import InvalidRhythmSpecificationError
-from model import Model
+from tkAppFramework.model import Model
 import json
 
 

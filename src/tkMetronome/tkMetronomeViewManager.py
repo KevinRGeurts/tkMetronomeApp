@@ -6,8 +6,8 @@ import winsound
 import logging
 
 # Local imports
-from tkViewManager import tkViewManager
-from ObserverPatternBase import Subject
+from tkAppFramework.tkViewManager import tkViewManager
+from tkAppFramework.ObserverPatternBase import Subject
 from metronome import BeatType
 from exceptions import InvalidRhythmSpecificationError
 

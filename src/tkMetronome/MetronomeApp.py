@@ -5,7 +5,7 @@ from multiprocessing import Process
 import logging
 
 # local imports
-from tkApp import AppAboutInfo, tkApp
+from tkAppFramework.tkApp import AppAboutInfo, tkApp
 from tkMetronomeViewManager import tkMetronomeViewManager
 from metronome import Metronome
 
