@@ -7,7 +7,7 @@ from enum import Enum
 import re as re
 
 # local imports
-from exceptions import InvalidRhythmSpecificationError
+import tkMetronomeApp.exceptions
 from tkAppFramework.model import Model
 import json
 
@@ -114,7 +114,7 @@ class Metronome(Model):
             # Hopefully functionality of regular expression matching can help with this.
             msg = 'Metronome rhythm specification is not valid.'
             msg += 'It must contain only characters from this set: WwHhQqr'
-            raise InvalidRhythmSpecificationError(error_msg = msg)
+            raise tkMetronomeApp.exceptions.InvalidRhythmSpecificationError(error_msg = msg)
         return None
 
     def readModelFromFile(self, file, filetype) -> None:

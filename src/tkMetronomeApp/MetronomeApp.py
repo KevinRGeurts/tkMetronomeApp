@@ -1,14 +1,12 @@
 # standard imports
 import tkinter as tk
-from tkinter import ttk
-from multiprocessing import Process
 import logging
+import sysconfig
 
 # local imports
 from tkAppFramework.tkApp import AppAboutInfo, tkApp
-from tkMetronomeViewManager import tkMetronomeViewManager
-from metronome import Metronome
-
+import tkMetronomeApp.metronome
+import tkMetronomeApp.tkMetronomeViewManager
 
 class MetronomeApp(tkApp):
     """
@@ -19,11 +17,12 @@ class MetronomeApp(tkApp):
         :param log_level: The logging level to set for the logger, e.g., logging.DEBUG, logging.INFO, etc.
         """
         # TODO: Remove the File | Test menu item before production release.
+        help_file_path = sysconfig.get_path('data') + '\\Help\\MetronomeApp\\HelpFile.txt'
         menu_dictionary = {'File':{'Open...':self.onFileOpen, 'Save':self.onFileSave, 'Save As...':self.onFileSaveAs, 'Exit':self.onFileExit, 'Test':self.onFileTest}, \
                            'Help':{'View Help...':self.onViewHelp,'About...':self.onHelpAbout}}
-        info = AppAboutInfo(name='Metronome', version='0.1', copyright='2025', author='Kevin R. Geurts',
-                            license='MIT License', source='https://github.com/KevinRGeurts/tkAppFramework',
-                            help_file='.\\Help\\HelpFile.txt')
+        info = AppAboutInfo(name='Metronome', version='1.0.0', copyright='2025', author='Kevin R. Geurts',
+                            license='MIT License', source='https://github.com/KevinRGeurts/MetronomeApp',
+                            help_file=help_file_path)
         super().__init__(parent, title="Metronome", menu_dict=menu_dictionary, app_info=info,
                          file_types=[('JSON file', '*.json')], log_level=log_level)
 
@@ -32,7 +31,7 @@ class MetronomeApp(tkApp):
         Factory method to create the view manager for the app.
         :return: The view manager for the app, tkMetronomeViewManager
         """
-        return tkMetronomeViewManager(self)
+        return tkMetronomeApp.tkMetronomeViewManager.tkMetronomeViewManager(self)
 
     def _createModel(self):
         """
@@ -40,7 +39,7 @@ class MetronomeApp(tkApp):
         :return: The model for the app, Metronome
         """
         # return Metronome(rhythm='WhhWhh')
-        return Metronome()
+        return tkMetronomeApp.metronome.Metronome()
 
     def onFileExit(self):
         """

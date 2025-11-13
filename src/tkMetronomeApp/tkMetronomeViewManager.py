@@ -8,8 +8,8 @@ import logging
 # Local imports
 from tkAppFramework.tkViewManager import tkViewManager
 from tkAppFramework.ObserverPatternBase import Subject
-from metronome import BeatType
-from exceptions import InvalidRhythmSpecificationError
+import tkMetronomeApp.metronome
+import tkMetronomeApp.exceptions
 
 
 class tkMetronomeViewManager(tkViewManager):
@@ -24,7 +24,7 @@ class tkMetronomeViewManager(tkViewManager):
         tkViewManager.__init__(self, parent)
         
         self._beat_after_id = 0 # The id of each successive tkinter "after" event that controls the timing of the next beat.
-        self._beacon_state = BeatType.REST
+        self._beacon_state = tkMetronomeApp.metronome.BeatType.REST
         # self.getModel().tempo=120 # Beats per minute setting for the metronome.
         
     def _CreateWidgets(self):
@@ -105,7 +105,7 @@ class tkMetronomeViewManager(tkViewManager):
             # Reset the beat after id
             self._beat_after_id = 0
             # Turn off beacon light
-            self._beacon_widget.set_state(BeatType.REST)
+            self._beacon_widget.set_state(tkMetronomeApp.metronome.BeatType.REST)
 
         return None
 
@@ -157,16 +157,16 @@ class tkMetronomeViewManager(tkViewManager):
         logger.debug(f"delay (s): {beat_delay}, stressed beat: {stressed}")
         
         # Turn off beacon, in case it was turned on by a previous beat
-        self._beacon_widget.set_state(BeatType.REST)
+        self._beacon_widget.set_state(tkMetronomeApp.metronome.BeatType.REST)
         
         # TODO: Make the frequency and duration of the beep for stressed and normal beats configurable.
 
         # Beep (unless it is a rest beat)
-        if stressed is not BeatType.REST:
-            if stressed is BeatType.STRESSED:
+        if stressed is not tkMetronomeApp.metronome.BeatType.REST:
+            if stressed is tkMetronomeApp.metronome.BeatType.STRESSED:
                 frequency = 2500  # Set Frequency To 2500 Hertz
                 duration = 100  # Set Duration To 50 ms == 0.05 second (must be < 250, since maximum bpm is 240)
-            elif stressed is BeatType.NORMAL:
+            elif stressed is tkMetronomeApp.metronome.BeatType.NORMAL:
                 frequency = 2500  # Set Frequency To 2500 Hertz
                 duration = 50  # Set Duration To 50 ms == 0.05 second (must be < 250, since maximum bpm is 240)
             winsound.Beep(frequency, duration)
@@ -314,7 +314,7 @@ class MetronomeRhythmWidget(ttk.Labelframe, Subject):
             self._rhythm_is_valid = True
             self.notify()
             return True
-        except InvalidRhythmSpecificationError as e:
+        except tkMetronomeApp.exceptions.InvalidRhythmSpecificationError as e:
             showerror(title='Metronome Rhythm Error', message=e.error_msg, parent=self)
             return False
 
@@ -365,18 +365,18 @@ class MetronomeBeaconWidget(ttk.Labelframe, Subject):
         self._btn_beacon['background']='black'
         self._btn_beacon['state']=tk.DISABLED
 
-    def set_state(self, state = BeatType.REST):
+    def set_state(self, state = tkMetronomeApp.metronome.BeatType.REST):
         """
         Maps argument state onte background color and sets it.
         :parameter state: What state should the beacon be set at, BeatType Enum
         :return None:
         """
         match state:
-            case BeatType.REST:
+            case tkMetronomeApp.metronome.BeatType.REST:
                 self._btn_beacon['background']='black'
-            case BeatType.NORMAL:
+            case tkMetronomeApp.metronome.BeatType.NORMAL:
                 self._btn_beacon['background']='green'
-            case BeatType.STRESSED:
+            case tkMetronomeApp.metronome.BeatType.STRESSED:
                 self._btn_beacon['background']='red'
         self.master.update_idletasks()
 
