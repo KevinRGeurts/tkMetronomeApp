@@ -366,3 +366,5 @@ FodyWeavers.xsd
 /env
 /src/tkMetronome/env
 /src/MetronomeApp/env
+/dist
+/src/tkMetronomeApp/env
