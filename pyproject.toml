@@ -3,8 +3,8 @@ requires = ["pdm-backend >= 2.4.0"]
 build-backend = "pdm.backend"
 
 [tool.pdm.build]
-includes = ["src/MetronomeApp/*.py"]
-source-includes = ["tests/", "src/MetronomeApp/Documentation/*","src/MetronomeApp/Help/*", "src/MetronomeApp/MetronomeApp.sln", "src/MetronomeApp/MetronomeApp.pyproj"]
+includes = ["src/tkMetronomeApp/*.py"]
+source-includes = ["tests/", "src/tkMetronomeApp/Documentation/*","src/tkMetronomeApp/Help/*", "src/tkMetronomeApp/MetronomeApp.sln", "src/tkMetronomeApp/MetronomeApp.pyproj"]
 
 [tool.pdm.build.wheel-data]
 # Recursively install all files from Help/ to the $prefix/data directory,
@@ -13,7 +13,7 @@ source-includes = ["tests/", "src/MetronomeApp/Documentation/*","src/MetronomeAp
 # to preserve the exact same directory structure in the destination:
 # Help/help_1.txt -> $prefix/Help/help_1.txt
 # data = [{path = "src/tkAppFramework/Help/**/*", relative-to = "."}]
-data = [{path = "src/MetronomeApp/Help/**/*", relative-to = "src/MetronomeApp/"}]
+data = [{path = "src/tkMetronomeApp/Help/**/*", relative-to = "src/tkMetronomeApp/"}]
 
 [project]
 name = "tkMetronomeApp"
@@ -24,7 +24,7 @@ dependencies = [
 authors = [
   { name="Kevin R. Geurts", email="kevin.r.geurts@gmail.com" },
 ]
-description = "MetronomeApp is a python package that provides a tkinter based metronome application for musicians."
+description = "tkMetronomeApp is a python package that provides a tkinter based metronome application for musicians."
 readme = "README.md"
 requires-python = ">=3.12"
 classifiers = [

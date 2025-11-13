@@ -17,11 +17,11 @@ class MetronomeApp(tkApp):
         :param log_level: The logging level to set for the logger, e.g., logging.DEBUG, logging.INFO, etc.
         """
         # TODO: Remove the File | Test menu item before production release.
-        help_file_path = sysconfig.get_path('data') + '\\Help\\MetronomeApp\\HelpFile.txt'
-        menu_dictionary = {'File':{'Open...':self.onFileOpen, 'Save':self.onFileSave, 'Save As...':self.onFileSaveAs, 'Exit':self.onFileExit, 'Test':self.onFileTest}, \
+        help_file_path = sysconfig.get_path('data') + '\\Help\\tkMetronomeApp\\MetronomeApp_HelpFile.txt'
+        menu_dictionary = {'File':{'Open...':self.onFileOpen, 'Save':self.onFileSave, 'Save As...':self.onFileSaveAs, 'Exit':self.onFileExit}, \
                            'Help':{'View Help...':self.onViewHelp,'About...':self.onHelpAbout}}
         info = AppAboutInfo(name='Metronome', version='1.0.0', copyright='2025', author='Kevin R. Geurts',
-                            license='MIT License', source='https://github.com/KevinRGeurts/MetronomeApp',
+                            license='MIT License', source='https://github.com/KevinRGeurts/tkMetronomeApp',
                             help_file=help_file_path)
         super().__init__(parent, title="Metronome", menu_dict=menu_dictionary, app_info=info,
                          file_types=[('JSON file', '*.json')], log_level=log_level)
@@ -46,16 +46,6 @@ class MetronomeApp(tkApp):
         Extend method from tkApp.
         """
         super().onFileExit()
-        return None
-
-    # TODO: Remove this temporary test method before production release.
-    def onFileTest(self):
-        """
-        Method called when menu item File | Test is selected. This is temporary for testing purposes.
-        """
-        # Test notification process when model changes.
-        self.getModel().tempo = 120
-        self.getModel().rhythm = 'wH'
         return None
 
     def _setup_logging(self, log_level=logging.INFO):
