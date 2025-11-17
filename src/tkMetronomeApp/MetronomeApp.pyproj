@@ -32,9 +32,6 @@
     <Compile Include="exceptions.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="main.py">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="metronome.py" />
     <Compile Include="MetronomeApp.py" />
     <Compile Include="tkMetronomeViewManager.py">
@@ -43,7 +40,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Documentation\Developer_Documentation.txt" />
-    <Content Include="Documentation\LICENSE.txt" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Documentation\" />

@@ -1,8 +1,8 @@
-# Metronome
+# MetronomeApp
 
 Source code: [GitHub](https://github.com/KevinRGeurts/tkMetronomeApp)
 ---
-Metronome is a Python tkinter application that provides metronome functionality.
+MetronomeApp is a Python tkinter application that provides metronome functionality.
 It allows users to set a tempo in beats per minute (BPM), to set a rhythm for the beats, and to start and stop the metronome.
 Beats sound an audible beep and flash a visual indicator, with stressed and unstressed beats visually and audibly distinct.
 
@@ -18,7 +18,7 @@ The simplest way to run the app is:
 python -m tkMetronomeApp.MetronomeApp 
 ```
 
-This assumes that the tkMetronomeApp package is installed.
+This assumes that the tkMetronomeApp package is installed. To learn how to use the app, select Help | View Help... from the menu bar.
 
 ## Unittests
 

@@ -1,3 +1,18 @@
+"""
+This module defines the tkMetronomeViewManager class, which is a concrete implementation of tkViewManager for a metronome application.
+Acts as Observer, and handles the interactions between the metronome app's widgets, which are also defined in this module.
+
+Exported Classes:
+    tkMetronomeViewManager -- Concrete implementation of tkViewManager for a metronome application.
+
+Exported Exceptions:
+    None    
+ 
+Exported Functions:
+    None
+"""
+
+
 # Standard imports
 import tkinter as tk
 from tkinter import ttk
@@ -18,22 +33,20 @@ class tkMetronomeViewManager(tkViewManager):
     """
     def __init__(self, parent) -> None:
         """
-        :parameter parent: The parent widget of this widget, The tkinter App, which hereafter will be
+        :parameter parent: The parent widget of this widget, The MetronomeApp, which hereafter will be
         accessed as self.master.
         """
         tkViewManager.__init__(self, parent)
         
         self._beat_after_id = 0 # The id of each successive tkinter "after" event that controls the timing of the next beat.
         self._beacon_state = tkMetronomeApp.metronome.BeatType.REST
-        # self.getModel().tempo=120 # Beats per minute setting for the metronome.
         
     def _CreateWidgets(self):
         """
-        Concrete implementation of tkViewManager._CreateWidgets.
+        Implementation of tkViewManager._CreateWidgets.
         Sets up and registers the child widgets of the tkMetronomeViewManager widget.
         :return None:
         """
-
         self._bpm_widget = MetronomeBpmWidget(self, bpm=self.getModel().tempo)
         self.register_subject(self._bpm_widget, self.handle_bmp_widget_update)
         self._bpm_widget.attach(self)
@@ -186,7 +199,8 @@ class MetronomeBpmWidget(ttk.Labelframe, Subject):
     """
     def __init__(self, parent, bpm=0) -> None:
         """
-        :parameter parent: tkinter widget that is the parent of this widget
+        :parameter parent: tkinter widget that is the parent of this widget, in this case the tkMetronomeViewManager
+        :parameter bpm: An initial beats per minute setting for this widget, int
         """
         ttk.Labelframe.__init__(self, parent, text="Beats Per Minute")
         Subject.__init__(self)
@@ -222,6 +236,9 @@ class MetronomeStartStopWidget(ttk.Labelframe, Subject):
     Class is also a Subject in Observer design pattern.
     """
     def __init__(self, parent) -> None:
+        """
+        :parameter parent: tkinter widget that is the parent of this widget, in this case the tkMetronomeViewManager
+        """
         ttk.Labelframe.__init__(self, parent, text='Start/Stop')
         Subject.__init__(self)
         
@@ -284,7 +301,7 @@ class MetronomeRhythmWidget(ttk.Labelframe, Subject):
     """
     def __init__(self, parent, rhythm='') -> None:
         """
-        :parameter parent: tkinter widget that is the parent of this widget
+        :parameter parent: tkinter widget that is the parent of this widget, in this case the tkMetronomeViewManager
         :parameter rhythm: An initial rhythm pattern setting for this widget, string
         """
         ttk.Labelframe.__init__(self, parent, text='Rhythm')
@@ -305,7 +322,7 @@ class MetronomeRhythmWidget(ttk.Labelframe, Subject):
     def OnRhythmChanged(self):
         """
         Event handler for changes to rhythm entry.
-        :return None:
+        :return True: if rhythm change is valid, False if invalid, boolean
         """
         # Inform all observers of the change in rhythm setting of the metronome.
         try:
@@ -321,9 +338,11 @@ class MetronomeRhythmWidget(ttk.Labelframe, Subject):
     def OnInvalidRhythmChange(self):
         """
         Called when OnRhythmChanged returns False.
+        :return None:
         """
         self._rhythm_is_valid = False
         self.notify()
+        return None
 
     def get_state(self):
         """
@@ -350,6 +369,9 @@ class MetronomeBeaconWidget(ttk.Labelframe, Subject):
     Class is also a Subject in Observer design pattern.
     """
     def __init__(self, parent) -> None:
+        """
+        :parameter parent: tkinter widget that is the parent of this widget, in this case the tkMetronomeViewManager
+        """
         ttk.Labelframe.__init__(self, parent, text='Beacon')
         Subject.__init__(self)
         
@@ -367,10 +389,11 @@ class MetronomeBeaconWidget(ttk.Labelframe, Subject):
 
     def set_state(self, state = tkMetronomeApp.metronome.BeatType.REST):
         """
-        Maps argument state onte background color and sets it.
+        Maps argument state onto background color and sets it.
         :parameter state: What state should the beacon be set at, BeatType Enum
         :return None:
         """
+        # TODO: Make the colors configurable, especially for color-blind users.
         match state:
             case tkMetronomeApp.metronome.BeatType.REST:
                 self._btn_beacon['background']='black'

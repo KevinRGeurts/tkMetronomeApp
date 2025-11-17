@@ -1,3 +1,25 @@
+"""
+This module defines the MetronomeApp class, which is a concrete implementation of the tkApp framework for a metronome application.
+
+Exported Classes:
+    MetronomeApp -- Concrete implementation of tkApp for a metronome application.
+
+Exported Exceptions:
+    None    
+ 
+Exported Functions:
+    None
+
+Scripting:
+    To run the MetronomeApp, execute this module as the main program. This will create an instance of the MetronomeApp and start its event loop.
+
+Logging:
+    The MetronomeApp class sets up a dedicated logger named 'metronome_app_logger' to handle logging for the application. 
+    The logging level can be configured during initialization. As set up, the logger is configured to output log messages
+    to stderr via a StreamHandler.
+"""
+
+
 # standard imports
 import tkinter as tk
 import logging
@@ -16,7 +38,6 @@ class MetronomeApp(tkApp):
         """
         :param log_level: The logging level to set for the logger, e.g., logging.DEBUG, logging.INFO, etc.
         """
-        # TODO: Remove the File | Test menu item before production release.
         help_file_path = sysconfig.get_path('data') + '\\Help\\tkMetronomeApp\\MetronomeApp_HelpFile.txt'
         menu_dictionary = {'File':{'Open...':self.onFileOpen, 'Save':self.onFileSave, 'Save As...':self.onFileSaveAs, 'Exit':self.onFileExit}, \
                            'Help':{'View Help...':self.onViewHelp,'About...':self.onHelpAbout}}
@@ -40,13 +61,6 @@ class MetronomeApp(tkApp):
         """
         # return Metronome(rhythm='WhhWhh')
         return tkMetronomeApp.metronome.Metronome()
-
-    def onFileExit(self):
-        """
-        Extend method from tkApp.
-        """
-        super().onFileExit()
-        return None
 
     def _setup_logging(self, log_level=logging.INFO):
         """

@@ -1,6 +1,17 @@
 """
-This module provides the metronome class, which represents the "business logic" of a metronome.
+This module defines the metronome class, which represents the "business logic" of a metronome.
+
+Exported Classes:
+    Metronome -- Concrete implementation tkAppFrammework.Model for a metronome application.
+    BeatType -- Enum representing the type of metronome beat (REST, NORMAL, STRESSED).
+
+Exported Exceptions:
+    None    
+ 
+Exported Functions:
+    None
 """
+
 
 # standard imports
 from enum import Enum
@@ -29,6 +40,10 @@ class Metronome(Model):
         _current_beat: Current location in the rhythm string, int
     """
     def __init__(self, tempo = 60, rhythm = 'Wwww'):
+        """
+        :parameter tempo: The tempo of the metronome, in bpm (beats per minute), int
+        :parameter rhythm: A string representing the rhythm of the metronome beats, string
+        """
         super().__init__()
         self.tempo = tempo
         self.rhythm = rhythm 

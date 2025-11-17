@@ -41,5 +41,5 @@ license-files = ["LICEN[CS]E*"]
 keywords = ["query", "console", "input", "response"]
 
 [project.urls]
-Homepage = "https://github.com/KevinRGeurts/MetronomeApp"
-Issues = "https://github.com/KevinRGeurts/MetronomeApp/issues"
+Homepage = "https://github.com/KevinRGeurts/tkMetronomeApp"
+Issues = "https://github.com/KevinRGeurts/tkMetronomeApp/issues"
